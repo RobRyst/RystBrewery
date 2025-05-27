@@ -16,11 +16,11 @@ namespace RystBrewery
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ViewModels.MainViewModel _vm;
+        private readonly Software.ViewModels.MainViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();
-            _vm = new ViewModels.MainViewModel();
+            _vm = new Software.ViewModels.MainViewModel();
             DataContext = _vm;
         }
 

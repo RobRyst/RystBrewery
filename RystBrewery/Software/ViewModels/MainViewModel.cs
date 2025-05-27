@@ -13,7 +13,7 @@ using RystBrewery.Software.AlarmSystem;
 
 
 
-namespace RystBrewery.ViewModels
+namespace RystBrewery.Software.ViewModels
 {
     internal class MainViewModel : INotifyPropertyChanged
     {
