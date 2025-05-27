@@ -16,14 +16,23 @@ namespace RystBrewery
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly ViewModels.MainViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();
+            _vm = new ViewModels.MainViewModel();
+            DataContext = _vm;
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Button clicked!");
+            if (string.IsNullOrEmpty(_vm.SelectedProgram))
+            {
+                MessageBox.Show("Select a program to run");
+                return;
+            }
+            MessageBox.Show($"Starter program: {_vm.SelectedProgram}");
+            _vm.StartTemperatureSimulation();
         }
     }
 }
