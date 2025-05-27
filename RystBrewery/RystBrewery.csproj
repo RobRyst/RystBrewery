@@ -12,27 +12,27 @@
     <Compile Remove="AlarmSystem\**" />
     <Compile Remove="Models\**" />
     <Compile Remove="Services\**" />
-    <Compile Remove="Software\NewFolder\**" />
     <Compile Remove="ViewModels\**" />
     <EmbeddedResource Remove="AlarmSystem\**" />
     <EmbeddedResource Remove="Models\**" />
     <EmbeddedResource Remove="Services\**" />
-    <EmbeddedResource Remove="Software\NewFolder\**" />
     <EmbeddedResource Remove="ViewModels\**" />
     <None Remove="AlarmSystem\**" />
     <None Remove="Models\**" />
     <None Remove="Services\**" />
-    <None Remove="Software\NewFolder\**" />
     <None Remove="ViewModels\**" />
     <Page Remove="AlarmSystem\**" />
     <Page Remove="Models\**" />
     <Page Remove="Services\**" />
-    <Page Remove="Software\NewFolder\**" />
     <Page Remove="ViewModels\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Software\Services\" />
   </ItemGroup>
 
 </Project>

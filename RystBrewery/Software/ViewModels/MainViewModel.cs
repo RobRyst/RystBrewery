@@ -9,12 +9,15 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.WPF;
 using System.Windows.Threading;
+using RystBrewery.Software.AlarmSystem;
+
 
 
 namespace RystBrewery.ViewModels
 {
     internal class MainViewModel : INotifyPropertyChanged
     {
+        private readonly AlarmService _alarmService = new();
         public ObservableCollection<string> ProgramOptions { get; set; } = new() { "Brygg IPA", "Brygg Pilsner", "VaskeProgram" };
         public string SelectedProgram { get; set; }
 
@@ -35,6 +38,13 @@ namespace RystBrewery.ViewModels
                    Name= "Temperature"
                }
            };
+
+            _alarmService.AlarmTriggered += OnAlarmTriggered;
+        }
+
+        private void OnAlarmTriggered()
+        {
+            _simTimer?.Stop();
         }
 
         public void StartTemperatureSimulation()
@@ -45,10 +55,10 @@ namespace RystBrewery.ViewModels
             _simTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _simTimer.Tick += (s, e) =>
             {
-                double randomIncrease = 0.5 +- _random.NextDouble();
+                double randomIncrease = 2 +- _random.NextDouble();
                 _currentTemp += randomIncrease;
                 _tempValues.Add(_currentTemp);
-                _tempValues.Add(_currentTemp);
+                _alarmService.CheckTemperature(_currentTemp, SelectedProgram, "Tank1");
                 OnPropertyChanged(nameof(TempSeries));
             };
             _simTimer.Start();
