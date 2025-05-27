@@ -3,10 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="http://schemas.livecharts.dev/2023/xaml"
         xmlns:local="clr-namespace:RystBrewery"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <ComboBox x:Name="ProgramSelector" Width="200" Margin="10" />
+        <Button Content="Start" Click="Start_Click" Margin="10" />
+        <Ellipse x:Name="StatusLamp" Width="20" Height="20" Fill="Gray" Margin="10" />
+        <TextBlock x:Name="StatusText" FontSize="14" />
 
     </Grid>
 </Window>

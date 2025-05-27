@@ -20,5 +20,10 @@ namespace RystBrewery
         {
             InitializeComponent();
         }
+
+        private void Start_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Button clicked!");
+        }
     }
 }
