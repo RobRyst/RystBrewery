@@ -55,7 +55,7 @@ namespace RystBrewery.Software.ViewModels
             _simTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _simTimer.Tick += (s, e) =>
             {
-                double randomIncrease = 2 +- _random.NextDouble();
+                double randomIncrease = 0.5 +- _random.NextDouble();
                 _currentTemp += randomIncrease;
                 _tempValues.Add(_currentTemp);
                 AlarmService.CheckTemperature(_currentTemp, SelectedProgram, "Tank1");

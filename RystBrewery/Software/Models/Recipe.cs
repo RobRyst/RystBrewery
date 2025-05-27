@@ -4,9 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RystBrewery.Models
+namespace RystBrewery.Software.Models
 {
-    internal class Recipe
+    public class Recipe
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<BrewingSteps> Steps { get; set; }
+    }
+
+    public class  BrewingSteps
+    {
+        public string Description { get; set; }
+        public string Time { get; set; }
     }
 }
