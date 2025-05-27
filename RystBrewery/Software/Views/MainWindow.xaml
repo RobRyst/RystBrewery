@@ -7,6 +7,20 @@
        mc:Ignorable="d"
        Title="MainWindow" Height="450" Width="800">
     <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Background="#EEE" Margin="10">
+            <TextBlock Text="Home" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
+            <Button Content="Dashboard" />
+            <Button Content="Temp Option1" Margin="1"/>
+            <Button Content="Temp Option2" Margin="1"/>
+            <Button Content="Temp Option3" Margin="1"/>
+
+        </StackPanel>
+        <Grid Grid.Column="1" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -21,5 +35,6 @@
 
         <!-- Chart displaying temperature -->
         <lvc:CartesianChart Grid.Row="1" Series="{Binding TempSeries}" LegendPosition="Right" />
+        </Grid>
     </Grid>
 </Window>

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.WPF;
-using System.Collections.ObjectModel;
 using System.Windows.Threading;
 
 
