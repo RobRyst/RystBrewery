@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace RystBrewery
 {
     /// <summary>
@@ -22,6 +23,29 @@ namespace RystBrewery
             InitializeComponent();
             _vm = new Software.ViewModels.MainViewModel();
             DataContext = _vm;
+
+            _vm.AlarmService.StatusChanged += (status) =>
+            {
+                Dispatcher.Invoke(() => UpdateLampStatus(status));
+            };
+        }
+
+        private void UpdateLampStatus(string status)
+        {
+            switch (status)
+            {
+                case "Running":
+                    StatusLight.Fill = Brushes.Yellow;
+                    break;
+
+                case "Completed": 
+                    StatusLight.Fill = Brushes.Green;
+                    break;
+
+                case "Error":
+                    StatusLight.Fill = Brushes.Red;
+                    break;
+            }
         }
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -33,6 +57,7 @@ namespace RystBrewery
             }
             MessageBox.Show($"Starter program: {_vm.SelectedProgram}");
             _vm.StartTemperatureSimulation();
+            UpdateLampStatus("Running");
         }
     }
 }

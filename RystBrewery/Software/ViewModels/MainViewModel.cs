@@ -17,7 +17,7 @@ namespace RystBrewery.Software.ViewModels
 {
     internal class MainViewModel : INotifyPropertyChanged
     {
-        private readonly AlarmService _alarmService = new();
+        public AlarmService AlarmService { get; } = new();
         public ObservableCollection<string> ProgramOptions { get; set; } = new() { "Brygg IPA", "Brygg Pilsner", "VaskeProgram" };
         public string SelectedProgram { get; set; }
 
@@ -39,7 +39,7 @@ namespace RystBrewery.Software.ViewModels
                }
            };
 
-            _alarmService.AlarmTriggered += OnAlarmTriggered;
+            AlarmService.AlarmTriggered += OnAlarmTriggered;
         }
 
         private void OnAlarmTriggered()
@@ -58,7 +58,7 @@ namespace RystBrewery.Software.ViewModels
                 double randomIncrease = 2 +- _random.NextDouble();
                 _currentTemp += randomIncrease;
                 _tempValues.Add(_currentTemp);
-                _alarmService.CheckTemperature(_currentTemp, SelectedProgram, "Tank1");
+                AlarmService.CheckTemperature(_currentTemp, SelectedProgram, "Tank1");
                 OnPropertyChanged(nameof(TempSeries));
             };
             _simTimer.Start();

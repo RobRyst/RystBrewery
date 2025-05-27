@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace RystBrewery.Software.AlarmSystem
 {
@@ -14,6 +15,7 @@ namespace RystBrewery.Software.AlarmSystem
         private readonly string _logPath = "alarm_log.txt";
 
         public event Action AlarmTriggered;
+        public event Action<string>? StatusChanged;
 
         public void CheckTemperature(double currentTemp, string selectedProgram, string tankName)
         {
@@ -27,11 +29,15 @@ namespace RystBrewery.Software.AlarmSystem
         {
             AlarmTriggered?.Invoke();
 
+            StatusChanged?.Invoke("Error");
+
             MessageBox.Show("Feil: Temperatur overstiger 50°C. Prosess stoppet.", "ALARM", MessageBoxButton.OK, MessageBoxImage.Error);
 
             LogAlarm(program, tank, temp);
 
         }
+
+
 
         private void LogAlarm(string program, string tank, double temp)
         {
