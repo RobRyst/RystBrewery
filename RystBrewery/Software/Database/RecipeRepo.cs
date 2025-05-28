@@ -26,7 +26,7 @@ namespace RystBrewery.Software.Database
 
     public class RecipeRepo
     {
-        private const string DbFileName = "recipes.db";
+        private const string DbFileName = "RystBrewery.db";
 
         public void AddRecipe(Recipe recipe)
         {

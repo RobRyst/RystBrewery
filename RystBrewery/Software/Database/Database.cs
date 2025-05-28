@@ -10,7 +10,7 @@ namespace RystBrewery.Software.Database
 {
     public static class Database
     {
-        private const string DbFileName = "recipes.db";
+        private const string DbFileName = "RystBrewery.db";
 
         public static void InitializeDatabase()
         {
@@ -32,9 +32,26 @@ namespace RystBrewery.Software.Database
                     Description TEXT NOT NULL,
                     Time INTEGER NOT NULL,
                     FOREIGN KEY (RecipeId) REFERENCES Recipes(Id)
-                );";
+                );
+
+
+                CREATE TABLE WashProgram (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    Name TEXT NOT NULL
+                );
+
+                CREATE TABLE WashingSteps (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    WashingId INTEGER NOT NULL,
+                    Description TEXT NOT NULL,
+                    Time INTEGER NOT NULL,
+                    FOREIGN KEY (WashingId) REFERENCES WashProgram(Id)
+            );";
+
                 tableCmd.ExecuteNonQuery();
             }
+
+
         }
     }
 }

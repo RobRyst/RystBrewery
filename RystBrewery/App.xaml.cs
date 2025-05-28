@@ -14,11 +14,10 @@ namespace RystBrewery
 
             Database.InitializeDatabase();
 
-            
-            var repo = new RecipeRepo();
-            if (!repo.RecipeExists("Ryst IPA"))
+            var recipeRepo = new RecipeRepo();
+            if (!recipeRepo.RecipeExists("Ryst IPA"))
             {
-                repo.AddRecipe(new Recipe
+                recipeRepo.AddRecipe(new Recipe
                 {
                     Name = "Ryst IPA",
                     Steps = new List<BrewingSteps>
@@ -30,9 +29,9 @@ namespace RystBrewery
                 });
             }
 
-            if (!repo.RecipeExists("Ryst Sommerøl"))
+            if (!recipeRepo.RecipeExists("Ryst Sommerøl"))
             {
-                repo.AddRecipe(new Recipe
+                recipeRepo.AddRecipe(new Recipe
                 {
                     Name = "Ryst Sommerøl",
                     Steps = new List<BrewingSteps>
@@ -44,9 +43,9 @@ namespace RystBrewery
                 });
             }
 
-            if (!repo.RecipeExists("Ryst Eplecider"))
+            if (!recipeRepo.RecipeExists("Ryst Eplecider"))
             {
-                repo.AddRecipe(new Recipe
+                recipeRepo.AddRecipe(new Recipe
                 {
                     Name = "Ryst Eplecider",
                     Steps = new List<BrewingSteps>
@@ -58,7 +57,23 @@ namespace RystBrewery
                 });
             }
 
-            repo.GetAllRecipes();
+            var washingRepo = new WashingRepo();
+            if (!washingRepo.WashProgramExists("Ryst IPA Wash"))
+            {
+                washingRepo.AddWashProgram(new WashProgram
+                {
+                    Name = "Ryst IPA Washing Program",
+                    Steps = new List<WashingSteps>
+        {
+            new() { Description = "Tømmer Tank", Time = 5 },
+            new() { Description = "Blander Vaskemiddel", Time = 3 },
+            new() { Description = "Spyl i 30min", Time = 10 }
+        }
+                });
+            }
+
+            recipeRepo.GetAllRecipes();
+            washingRepo.getAllWashPrograms();
 
             var mainWindow = new MainWindow();
             mainWindow.Show();
