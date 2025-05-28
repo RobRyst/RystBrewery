@@ -52,6 +52,19 @@ namespace RystBrewery.Software.Database
             }
         }
 
+        public bool RecipeExists(string name)
+        {
+            using var connection = new SqliteConnection($"Data Source = {DbFileName}");
+            connection.Open();
+
+            var cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT COUNT(*) FROM Recipes WHERE Name = $name";
+            cmd.Parameters.AddWithValue("$name", name);
+
+            var count = (long)cmd.ExecuteScalar();
+            return count > 0;
+        }
+
         public List<Recipe> GetAllRecipes()
         {
             var recipes = new List<Recipe>();
@@ -68,8 +81,7 @@ namespace RystBrewery.Software.Database
                 {
                     Id = reader.GetInt32(0),
                     Name = reader.GetString(1)
-                }
-                ;
+                };
                 recipes.Add(recipe);
             }
             foreach (var recipe in recipes)

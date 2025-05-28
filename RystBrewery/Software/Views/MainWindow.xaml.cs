@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RystBrewery.Software.ViewModels;
 
 
 namespace RystBrewery
@@ -17,7 +18,7 @@ namespace RystBrewery
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Software.ViewModels.MainViewModel _vm;
+        private readonly MainViewModel _vm;
         public MainWindow()
         {
             InitializeComponent();

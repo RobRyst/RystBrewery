@@ -10,7 +10,7 @@ namespace RystBrewery.Software.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<BrewingSteps> Steps { get; set; }
+        public List<BrewingSteps> BrewingSteps { get; set; }
     }
 
     public class  BrewingSteps

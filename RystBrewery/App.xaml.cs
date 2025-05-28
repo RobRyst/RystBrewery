@@ -5,9 +5,6 @@ using System.Windows;
 
 namespace RystBrewery
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         protected override void OnStartup(StartupEventArgs e)
@@ -16,19 +13,51 @@ namespace RystBrewery
 
             Database.InitializeDatabase();
 
+            
             var repo = new RecipeRepo();
-            repo.AddRecipe(new Recipe
+            if (!repo.RecipeExists("Ryst IPA"))
             {
-                Name = "IPA",
-                Steps = new List<BrewingSteps>
+                repo.AddRecipe(new Recipe
+                {
+                    Name = "Ryst IPA",
+                    Steps = new List<BrewingSteps>
         {
             new() { Description = "Varm opp til 65°C", Time = 1 },
             new() { Description = "Tilsett malt", Time = 2 },
             new() { Description = "Kok i 60 min", Time = 1 }
         }
-            });
+                });
+            }
 
-            var allRecipes = repo.GetAllRecipes();
+            if (!repo.RecipeExists("Ryst Sommerøl"))
+            {
+                repo.AddRecipe(new Recipe
+                {
+                    Name = "Ryst Sommerøl",
+                    Steps = new List<BrewingSteps>
+        {
+            new() { Description = "Varm opp til 65°C", Time = 1 },
+            new() { Description = "Tilsett malt", Time = 1 },
+            new() { Description = "Kok i 60 min", Time = 1 }
+        }
+                });
+            }
+
+            if (!repo.RecipeExists("Ryst Eplecider"))
+            {
+                repo.AddRecipe(new Recipe
+                {
+                    Name = "Ryst Eplecider",
+                    Steps = new List<BrewingSteps>
+        {
+            new() { Description = "Varm opp til 65°C", Time = 1 },
+            new() { Description = "Tilsett malt", Time = 1 },
+            new() { Description = "Kok i 60 min", Time = 1 }
+        }
+                });
+            }
+
+            repo.GetAllRecipes();
 
             var mainWindow = new MainWindow();
             mainWindow.Show();

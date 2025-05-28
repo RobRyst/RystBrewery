@@ -23,7 +23,7 @@ namespace RystBrewery.Software.Database
                 tableCmd.CommandText = @"
                 CREATE TABLE Recipes (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Name INTEGER NOT NULL
+                    Name TEXT NOT NULL
                     );
 
                 CREATE TABLE BrewingSteps (

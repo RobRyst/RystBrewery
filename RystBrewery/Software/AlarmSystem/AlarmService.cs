@@ -11,7 +11,7 @@ namespace RystBrewery.Software.AlarmSystem
 {
     class AlarmService
     {
-        private const double MaxTempThreshold = 35;
+        private const double MaxTempThreshold = 80;
         private readonly string _logPath = "alarm_log.txt";
 
         public event Action AlarmTriggered;
@@ -28,11 +28,9 @@ namespace RystBrewery.Software.AlarmSystem
         private void TriggerAlarm(string program, string tank, double temp)
         {
             AlarmTriggered?.Invoke();
-
             StatusChanged?.Invoke("Error");
 
-            MessageBox.Show("Feil: Temperatur overstiger 50°C. Prosess stoppet.", "ALARM", MessageBoxButton.OK, MessageBoxImage.Error);
-
+            MessageBox.Show("Error: Temperature went above 80°C. Process stopped.", "ALARM", MessageBoxButton.OK, MessageBoxImage.Error);
             LogAlarm(program, tank, temp);
 
         }
