@@ -43,6 +43,14 @@ namespace RystBrewery
                     StatusLight.Fill = Brushes.Green;
                     break;
 
+                case "Paused":
+                    StatusLight.Fill = Brushes.Black;
+                    break;
+
+                case "Stopped":
+                    StatusLight.Fill = Brushes.Blue;
+                    break;
+
                 case "Error":
                     StatusLight.Fill = Brushes.Red;
                     break;
@@ -59,6 +67,17 @@ namespace RystBrewery
             MessageBox.Show($"Starter program: {_vm.SelectedProgram}");
             _vm.StartTemperatureSimulation();
             UpdateLampStatus("Running");
+        }
+
+        private void Pause_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.StopSimulation();
+            UpdateLampStatus("Paused");
+        }
+
+        private void Stop_Click(object sender, RoutedEventArgs e) {
+            _vm.StopSimulation();
+            UpdateLampStatus("Stopped");
         }
     }
 }

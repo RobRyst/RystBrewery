@@ -23,9 +23,14 @@ namespace RystBrewery.Software.ViewModels
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public string SelectedProgram { get; set; }
 
+        private Recipe? _currentRecipe;
+        private int _currentStepIndex = 0;
+        private int _stepTimeElapsed = 0;
+        private string _currentStepDescription;
+
         public ISeries[] TemperatureSeries { get; set; }
-        private double _currentTemperature = 60.0;
-        private readonly ObservableCollection<double> _temperatureValues = new ObservableCollection<double>();
+        private int _currentTemperature = 53;
+        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
         private readonly RecipeRepo _repo;
 
         private DispatcherTimer? _simulationTimer;
@@ -44,7 +49,7 @@ namespace RystBrewery.Software.ViewModels
 
             TemperatureSeries = new ISeries[]
             {
-               new LineSeries<double>
+               new LineSeries<int>
                {
                    Values = _temperatureValues,
                    Name= "Temperature"
@@ -54,21 +59,30 @@ namespace RystBrewery.Software.ViewModels
             AlarmService.AlarmTriggered += OnAlarmTriggered;
         }
 
+        public string CurrentStepDescription
+        {
+            get => _currentStepDescription;
+            set
+            {
+                _currentStepDescription = value;
+                OnPropertyChanged(nameof(CurrentStepDescription));
+            }
+        }
+
 
 
         public void LoadBrewingSteps()
         {
             CurrentBrewingSteps.Clear();
-            CurrentBrewingSteps.Clear();
             if (string.IsNullOrEmpty(SelectedProgram)) return;
 
             var recipe = _repo
                 .GetAllRecipes()
-                .FirstOrDefault(r => r.Name == SelectedProgram);
+                .FirstOrDefault(recipe => recipe.Name == SelectedProgram);
 
             if (recipe == null) return;
-            foreach (var step in recipe.Steps)
-                CurrentBrewingSteps.Add(step);
+            foreach (var brewingStep in recipe.Steps)
+                CurrentBrewingSteps.Add(brewingStep);
         }
 
         public void StopSimulation()
@@ -86,16 +100,36 @@ namespace RystBrewery.Software.ViewModels
             if (_simulationTimer != null && _simulationTimer.IsEnabled)
                 return;
 
+            _currentRecipe = _repo
+                .GetAllRecipes()
+                .FirstOrDefault(recipe => recipe.Name == SelectedProgram);
+
+            if (_currentRecipe == null || _currentRecipe.Steps.Count == 0)
+                return;
+
+            _currentStepIndex = 0;
+            _stepTimeElapsed = 0;
+
             _simulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _simulationTimer.Tick += (sender, args) =>
+            _simulationTimer.Tick += SimulationTick;
             {
                 try
                 {
-                    double temperatureChanges = _random.NextDouble() * 2 - 1;
-                    _currentTemperature += temperatureChanges;
+                    if (_currentTemperature < 65) {
+                        //double temperatureChange = _random.NextDouble() * 2 - 1;
+                        //int temperatureChanges = _currentTemperature += 2;
+                        //_currentTemperature += temperatureChanges;
+                        _currentTemperature += 2;
+
+
+                        if (_currentTemperature == 65)
+                        {
+                            _currentTemperature = 65;
+                        }
+                    }
                     _temperatureValues.Add(_currentTemperature);
-                    AlarmService.CheckTemperature(_currentTemperature, SelectedProgram, "Tank1");
-                    _currentTemperature = Math.Clamp(_currentTemperature, 0.0, 100.0);
+                    AlarmService.CheckTemperature(_currentTemperature, SelectedProgram, "Ryst IPA Tank");
+                    //_currentTemperature = Math.Clamp(_currentTemperature, 0, 100);
                 }
                 catch (Exception ex)
                 {
@@ -105,6 +139,49 @@ namespace RystBrewery.Software.ViewModels
             };
             _simulationTimer?.Start();
         }
+
+        private void SimulationTick(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (_currentRecipe == null || _currentStepIndex >= _currentRecipe.Steps.Count)
+                {
+                    CurrentStepDescription = "Brewing complete.";
+                    _simulationTimer?.Stop();
+                    return;
+                }
+
+                var step = _currentRecipe.Steps[_currentStepIndex];
+                CurrentStepDescription = $"Step {_currentStepIndex + 1}/{_currentRecipe.Steps.Count}: {step.Description} ({step.Time} sec)";
+
+                if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (_currentTemperature <= 65)
+                    {
+                        _currentTemperature += 2;
+                        if (_currentTemperature >= 65)
+                            _currentTemperature = 65;
+                    }
+                }
+
+                _temperatureValues.Add(_currentTemperature);
+                AlarmService.CheckTemperature(_currentTemperature, SelectedProgram, "Ryst Tank");
+
+                _stepTimeElapsed++;
+
+                if (_stepTimeElapsed >= step.Time)
+                {
+                    _currentStepIndex++;
+                    _stepTimeElapsed = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _simulationTimer?.Stop();
+                CurrentStepDescription = $"Simulation error: {ex.Message}";
+            }
+        }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)

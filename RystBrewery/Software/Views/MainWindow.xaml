@@ -18,19 +18,21 @@
             <Button Content="Temp Option1" Margin="1"/>
             <Button Content="Temp Option2" Margin="1"/>
             <Button Content="Temp Option3" Margin="1"/>
-
+            <TextBlock Text="{Binding CurrentStepDescription}" FontSize="16" Margin="10"/>
         </StackPanel>
+        
         <Grid Grid.Column="1" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Top controls: Where to select program + Start the program -->
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBlock Text="Velg program:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                 <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedProgram, Mode=TwoWay}"/>
                 <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Click"/>
+                <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
+                <Button Content="Pause" Width="75" Height="20" Margin="10,0,0,0" Click="Pause_Click" />
                 <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="10" />
             </StackPanel>
 

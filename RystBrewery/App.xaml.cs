@@ -1,4 +1,5 @@
 ﻿using RystBrewery.Software.Database;
+using RystBrewery.Software.ViewModels;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -22,9 +23,9 @@ namespace RystBrewery
                     Name = "Ryst IPA",
                     Steps = new List<BrewingSteps>
         {
-            new() { Description = "Varm opp til 65°C", Time = 1 },
-            new() { Description = "Tilsett malt", Time = 2 },
-            new() { Description = "Kok i 60 min", Time = 1 }
+            new() { Description = "Varm opp til 65°C", Time = 5 },
+            new() { Description = "Tilsett malt", Time = 3 },
+            new() { Description = "Kok i 60 min", Time = 10 }
         }
                 });
             }
@@ -36,9 +37,9 @@ namespace RystBrewery
                     Name = "Ryst Sommerøl",
                     Steps = new List<BrewingSteps>
         {
-            new() { Description = "Varm opp til 65°C", Time = 1 },
-            new() { Description = "Tilsett malt", Time = 1 },
-            new() { Description = "Kok i 60 min", Time = 1 }
+            new() { Description = "Varm opp til 65°C", Time = 5 },
+            new() { Description = "Tilsett Sommer", Time = 3 },
+            new() { Description = "Kok i 60 min", Time = 10 }
         }
                 });
             }
@@ -50,9 +51,9 @@ namespace RystBrewery
                     Name = "Ryst Eplecider",
                     Steps = new List<BrewingSteps>
         {
-            new() { Description = "Varm opp til 65°C", Time = 1 },
-            new() { Description = "Tilsett malt", Time = 1 },
-            new() { Description = "Kok i 60 min", Time = 1 }
+            new() { Description = "Varm opp til 65°C", Time = 5 },
+            new() { Description = "Tilsett EPLE", Time = 3 },
+            new() { Description = "Kok i 60 min", Time = 10 }
         }
                 });
             }
