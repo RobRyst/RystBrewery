@@ -73,7 +73,7 @@ namespace RystBrewery
             }
 
             recipeRepo.GetAllRecipes();
-            washingRepo.getAllWashPrograms();
+            washingRepo.GetAllWashPrograms();
 
             var mainWindow = new MainWindow();
             mainWindow.Show();

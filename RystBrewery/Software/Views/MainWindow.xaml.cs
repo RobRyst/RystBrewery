@@ -59,12 +59,12 @@ namespace RystBrewery
 
         private void Start_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(_vm.SelectedProgram))
+            if (string.IsNullOrEmpty(_vm.SelectedBrewingProgram))
             {
                 MessageBox.Show("Select a program to run");
                 return;
             }
-            MessageBox.Show($"Starter program: {_vm.SelectedProgram}");
+            MessageBox.Show($"Starter program: {_vm.SelectedBrewingProgram}");
             _vm.StartTemperatureSimulation();
             UpdateLampStatus("Running");
         }

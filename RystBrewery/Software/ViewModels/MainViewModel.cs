@@ -21,29 +21,49 @@ namespace RystBrewery.Software.ViewModels
         public AlarmService AlarmService { get; } = new AlarmService();
         public ObservableCollection<string> ProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
-        public string SelectedProgram { get; set; }
+        public string SelectedBrewingProgram { get; set; }
+        public string SelectedWashingProgram { get; set; }
+
 
         private Recipe? _currentRecipe;
-        private int _currentStepIndex = 0;
+        private int _currentBrewingStepIndex = 0;
+        private string _currentBrewingStepDescription;
+
+        private WashProgram? _currentWashProgram;
+        private int _currentWashingStepIndex = 0;
+        private string _currentWashingStepDescription;
+        //Testing multiple uses of _stepTimeElapsed - Otherwise change to BrewingStepTimeElapsed. 
         private int _stepTimeElapsed = 0;
-        private string _currentStepDescription;
+
+        public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
+        private readonly WashingRepo _washingRepo;
+
+
 
         public ISeries[] TemperatureSeries { get; set; }
         private int _currentTemperature = 53;
         private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
-        private readonly RecipeRepo _repo;
+        private readonly RecipeRepo _brewingRepo;
 
         private DispatcherTimer? _simulationTimer;
         private readonly Random _random = new Random();
 
         public MainViewModel()
         {
-            _repo = new RecipeRepo();
-            var recipes = _repo.GetAllRecipes();
+            _brewingRepo = new RecipeRepo();
+            var recipes = _brewingRepo.GetAllRecipes();
 
             foreach (var recipe in recipes)
             {
                 ProgramOptions.Add(recipe.Name);
+            }
+
+            _washingRepo = new WashingRepo();
+            var washPrograms = _washingRepo.GetAllWashPrograms();
+
+            foreach (var washProgram in washPrograms)
+            {
+                ProgramOptions.Add(washProgram.Name);
             }
 
 
@@ -59,30 +79,53 @@ namespace RystBrewery.Software.ViewModels
             AlarmService.AlarmTriggered += OnAlarmTriggered;
         }
 
-        public string CurrentStepDescription
+        public string CurrentBrewingStepDescription
         {
-            get => _currentStepDescription;
+            get => _currentBrewingStepDescription;
             set
             {
-                _currentStepDescription = value;
-                OnPropertyChanged(nameof(CurrentStepDescription));
+                _currentBrewingStepDescription = value;
+                OnPropertyChanged(nameof(CurrentBrewingStepDescription));
             }
         }
 
+        public string CurrectWashingStepDescription
+        {
+            get => _currentWashingStepDescription;
+            set
+            {
+                _currentWashingStepDescription = value;
+                OnPropertyChanged(nameof(CurrectWashingStepDescription));
+            }
+        }
 
 
         public void LoadBrewingSteps()
         {
             CurrentBrewingSteps.Clear();
-            if (string.IsNullOrEmpty(SelectedProgram)) return;
+            if (string.IsNullOrEmpty(SelectedBrewingProgram)) return;
 
-            var recipe = _repo
+            var recipe = _brewingRepo
                 .GetAllRecipes()
-                .FirstOrDefault(recipe => recipe.Name == SelectedProgram);
+                .FirstOrDefault(recipe => recipe.Name == SelectedBrewingProgram);
 
             if (recipe == null) return;
             foreach (var brewingStep in recipe.Steps)
                 CurrentBrewingSteps.Add(brewingStep);
+        }
+
+        public void LoadWashingSteps()
+        {
+            CurrentWashingSteps.Clear();
+            if (string.IsNullOrEmpty(SelectedWashingProgram)) return;
+
+            var washProgram = _washingRepo
+                .GetAllWashPrograms()
+                .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
+
+            if (washProgram == null) return;
+            foreach (var washingSteps in washProgram.Steps)
+                CurrentWashingSteps.Add(washingSteps);
         }
 
         public void StopSimulation()
@@ -100,14 +143,14 @@ namespace RystBrewery.Software.ViewModels
             if (_simulationTimer != null && _simulationTimer.IsEnabled)
                 return;
 
-            _currentRecipe = _repo
+            _currentRecipe = _brewingRepo
                 .GetAllRecipes()
-                .FirstOrDefault(recipe => recipe.Name == SelectedProgram);
+                .FirstOrDefault(recipe => recipe.Name == SelectedBrewingProgram);
 
             if (_currentRecipe == null || _currentRecipe.Steps.Count == 0)
                 return;
 
-            _currentStepIndex = 0;
+            _currentBrewingStepIndex = 0;
             _stepTimeElapsed = 0;
 
             _simulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -128,7 +171,7 @@ namespace RystBrewery.Software.ViewModels
                         }
                     }
                     _temperatureValues.Add(_currentTemperature);
-                    AlarmService.CheckTemperature(_currentTemperature, SelectedProgram, "Ryst IPA Tank");
+                    AlarmService.CheckTemperature(_currentTemperature, SelectedBrewingProgram, "Ryst IPA Tank");
                     //_currentTemperature = Math.Clamp(_currentTemperature, 0, 100);
                 }
                 catch (Exception ex)
@@ -144,15 +187,15 @@ namespace RystBrewery.Software.ViewModels
         {
             try
             {
-                if (_currentRecipe == null || _currentStepIndex >= _currentRecipe.Steps.Count)
+                if (_currentRecipe == null || _currentBrewingStepIndex >= _currentRecipe.Steps.Count)
                 {
-                    CurrentStepDescription = "Brewing complete.";
+                    CurrentBrewingStepDescription = "Brewing complete.";
                     _simulationTimer?.Stop();
                     return;
                 }
 
-                var step = _currentRecipe.Steps[_currentStepIndex];
-                CurrentStepDescription = $"Step {_currentStepIndex + 1}/{_currentRecipe.Steps.Count}: {step.Description} ({step.Time} sec)";
+                var step = _currentRecipe.Steps[_currentBrewingStepIndex];
+                CurrentBrewingStepDescription = $"Step {_currentBrewingStepIndex + 1}/{_currentRecipe.Steps.Count}: {step.Description} ({step.Time} sec)";
 
                 if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
                 {
@@ -165,20 +208,20 @@ namespace RystBrewery.Software.ViewModels
                 }
 
                 _temperatureValues.Add(_currentTemperature);
-                AlarmService.CheckTemperature(_currentTemperature, SelectedProgram, "Ryst Tank");
+                AlarmService.CheckTemperature(_currentTemperature, SelectedBrewingProgram, "Ryst Tank");
 
                 _stepTimeElapsed++;
 
                 if (_stepTimeElapsed >= step.Time)
                 {
-                    _currentStepIndex++;
+                    _currentBrewingStepIndex++;
                     _stepTimeElapsed = 0;
                 }
             }
             catch (Exception ex)
             {
                 _simulationTimer?.Stop();
-                CurrentStepDescription = $"Simulation error: {ex.Message}";
+                _currentBrewingStepDescription = $"Simulation error: {ex.Message}";
             }
         }
 

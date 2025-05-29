@@ -18,7 +18,8 @@
             <Button Content="Temp Option1" Margin="1"/>
             <Button Content="Temp Option2" Margin="1"/>
             <Button Content="Temp Option3" Margin="1"/>
-            <TextBlock Text="{Binding CurrentStepDescription}" FontSize="16" Margin="10"/>
+            <TextBlock Text="{Binding CurrentBrewingStepDescription}" FontSize="16" Margin="10"/>
+            <TextBlock Text="{Binding CurrentWashingStepDescription}" FontSize="16" Margin="10"/>
         </StackPanel>
         
         <Grid Grid.Column="1" Margin="10">
@@ -29,7 +30,8 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBlock Text="Velg program:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedProgram, Mode=TwoWay}"/>
+                <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedBrewingProgram, Mode=TwoWay}"/>
+                <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedWashingProgram, Mode=TwoWay}"/>
                 <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Click"/>
                 <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
                 <Button Content="Pause" Width="75" Height="20" Margin="10,0,0,0" Click="Pause_Click" />

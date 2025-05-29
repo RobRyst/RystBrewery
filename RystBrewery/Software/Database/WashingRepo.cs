@@ -64,7 +64,7 @@ namespace RystBrewery.Software.Database
                 return count > 0;
             }
 
-            public List<WashProgram> getAllWashPrograms()
+            public List<WashProgram> GetAllWashPrograms()
             {
                 var washPrograms = new List<WashProgram>();
 
