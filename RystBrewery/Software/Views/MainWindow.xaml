@@ -30,9 +30,10 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
             <TextBlock Text="Velg program:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedBrewingProgram, Mode=TwoWay}"/>
-                <ComboBox Width="150" Height="20" ItemsSource="{Binding ProgramOptions}" SelectedItem="{Binding SelectedWashingProgram, Mode=TwoWay}"/>
-                <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Click"/>
+                <ComboBox Width="150" Height="20" ItemsSource="{Binding BrewingProgramOptions}" SelectedItem="{Binding SelectedBrewingProgram, Mode=TwoWay}"/>
+                <ComboBox Width="150" Height="20" ItemsSource="{Binding WashingProgramOptions}" SelectedItem="{Binding SelectedWashingProgram, Mode=TwoWay}"/>
+                <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Brewing_Click"/>
+                <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Washing_Click"/>
                 <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
                 <Button Content="Pause" Width="75" Height="20" Margin="10,0,0,0" Click="Pause_Click" />
                 <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="10" />

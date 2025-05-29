@@ -57,7 +57,7 @@ namespace RystBrewery
             }
         }
 
-        private void Start_Click(object sender, RoutedEventArgs e)
+        private void Start_Brewing_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(_vm.SelectedBrewingProgram))
             {
@@ -65,7 +65,19 @@ namespace RystBrewery
                 return;
             }
             MessageBox.Show($"Starter program: {_vm.SelectedBrewingProgram}");
-            _vm.StartTemperatureSimulation();
+            _vm.StartBrewingSimulation();
+            UpdateLampStatus("Running");
+        }
+
+        private void Start_Washing_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_vm.SelectedWashingProgram))
+            {
+                MessageBox.Show("Select a program to run");
+                return;
+            }
+            MessageBox.Show($"Starter program: {_vm.SelectedWashingProgram}");
+            _vm.StartWashingSimulation();
             UpdateLampStatus("Running");
         }
 

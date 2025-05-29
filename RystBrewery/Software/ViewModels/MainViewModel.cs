@@ -19,7 +19,8 @@ namespace RystBrewery.Software.ViewModels
     internal class MainViewModel : INotifyPropertyChanged
     {
         public AlarmService AlarmService { get; } = new AlarmService();
-        public ObservableCollection<string> ProgramOptions { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public string SelectedBrewingProgram { get; set; }
         public string SelectedWashingProgram { get; set; }
@@ -55,7 +56,7 @@ namespace RystBrewery.Software.ViewModels
 
             foreach (var recipe in recipes)
             {
-                ProgramOptions.Add(recipe.Name);
+                BrewingProgramOptions.Add(recipe.Name);
             }
 
             _washingRepo = new WashingRepo();
@@ -63,7 +64,7 @@ namespace RystBrewery.Software.ViewModels
 
             foreach (var washProgram in washPrograms)
             {
-                ProgramOptions.Add(washProgram.Name);
+                WashingProgramOptions.Add(washProgram.Name);
             }
 
 
@@ -89,13 +90,13 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        public string CurrectWashingStepDescription
+        public string CurrentWashingStepDescription
         {
             get => _currentWashingStepDescription;
             set
             {
                 _currentWashingStepDescription = value;
-                OnPropertyChanged(nameof(CurrectWashingStepDescription));
+                OnPropertyChanged(nameof(CurrentWashingStepDescription));
             }
         }
 
@@ -138,7 +139,7 @@ namespace RystBrewery.Software.ViewModels
             StopSimulation();
         }
 
-        public void StartTemperatureSimulation()
+        public void StartBrewingSimulation()
         {
             if (_simulationTimer != null && _simulationTimer.IsEnabled)
                 return;
@@ -154,7 +155,7 @@ namespace RystBrewery.Software.ViewModels
             _stepTimeElapsed = 0;
 
             _simulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _simulationTimer.Tick += SimulationTick;
+            _simulationTimer.Tick += BrewingSimulationTick;
             {
                 try
                 {
@@ -183,7 +184,54 @@ namespace RystBrewery.Software.ViewModels
             _simulationTimer?.Start();
         }
 
-        private void SimulationTick(object? sender, EventArgs e)
+        public void StartWashingSimulation()
+        {
+            if (_simulationTimer != null && _simulationTimer.IsEnabled)
+                return;
+
+            _currentWashProgram = _washingRepo
+                .GetAllWashPrograms()
+                .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
+
+            if (_currentWashProgram == null || _currentWashProgram.Steps.Count == 0)
+                return;
+
+            _currentWashingStepIndex = 0;
+            _stepTimeElapsed = 0;
+
+            _simulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _simulationTimer.Tick += WashingSimulationTick;
+            {
+                try
+                {
+                    if (_currentTemperature < 65)
+                    {
+                        //double temperatureChange = _random.NextDouble() * 2 - 1;
+                        //int temperatureChanges = _currentTemperature += 2;
+                        //_currentTemperature += temperatureChanges;
+                        _currentTemperature += 2;
+
+
+                        if (_currentTemperature == 65)
+                        {
+                            _currentTemperature = 65;
+                        }
+                    }
+                    _temperatureValues.Add(_currentTemperature);
+                    AlarmService.CheckTemperature(_currentTemperature, SelectedWashingProgram, "Ryst IPA Tank");
+                    //_currentTemperature = Math.Clamp(_currentTemperature, 0, 100);
+                }
+                catch (Exception ex)
+                {
+                    _simulationTimer?.Stop();
+                    Console.WriteLine($"Simulation failed and the process stopped: {ex.Message}");
+                }
+            }
+            ;
+            _simulationTimer?.Start();
+        }
+
+        private void BrewingSimulationTick(object? sender, EventArgs e)
         {
             try
             {
@@ -222,6 +270,48 @@ namespace RystBrewery.Software.ViewModels
             {
                 _simulationTimer?.Stop();
                 _currentBrewingStepDescription = $"Simulation error: {ex.Message}";
+            }
+        }
+
+        private void WashingSimulationTick(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (_currentWashProgram == null || _currentWashingStepIndex >= _currentWashProgram.Steps.Count)
+                {
+                    CurrentBrewingStepDescription = "Wash Complete, you can now start the Brewery again";
+                    _simulationTimer?.Stop();
+                    return;
+                }
+
+                var step = _currentWashProgram.Steps[_currentWashingStepIndex];
+                CurrentWashingStepDescription = $"Step {_currentBrewingStepIndex + 1}/{_currentWashProgram.Steps.Count}: {step.Description} ({step.Time} sec)";
+
+                if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (_currentTemperature <= 65)
+                    {
+                        _currentTemperature += 2;
+                        if (_currentTemperature >= 65)
+                            _currentTemperature = 65;
+                    }
+                }
+
+                _temperatureValues.Add(_currentTemperature);
+                AlarmService.CheckTemperature(_currentTemperature, SelectedWashingProgram, "Ryst Tank");
+
+                _stepTimeElapsed++;
+
+                if (_stepTimeElapsed >= step.Time)
+                {
+                    _currentWashingStepIndex++;
+                    _stepTimeElapsed = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _simulationTimer?.Stop();
+                _currentWashingStepDescription = $"Simulation error: {ex.Message}";
             }
         }
 
