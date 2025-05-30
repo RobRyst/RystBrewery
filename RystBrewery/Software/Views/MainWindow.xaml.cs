@@ -39,7 +39,7 @@ namespace RystBrewery
                     StatusLight.Fill = Brushes.Yellow;
                     break;
 
-                case "Completed": 
+                case "Completed":
                     StatusLight.Fill = Brushes.Green;
                     break;
 

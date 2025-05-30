@@ -65,7 +65,7 @@ namespace RystBrewery
                     Name = "Ryst IPA Washing Program",
                     Steps = new List<WashingSteps>
         {
-            new() { Description = "Tømmer Tank", Time = 5 },
+            new() { Description = "Varm opp til 65°C", Time = 5 },
             new() { Description = "Blander Vaskemiddel", Time = 3 },
             new() { Description = "Spyl i 30min", Time = 10 }
         }
