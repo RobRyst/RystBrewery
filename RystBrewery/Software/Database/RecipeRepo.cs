@@ -54,7 +54,7 @@ namespace RystBrewery.Software.Database
 
         public bool RecipeExists(string name)
         {
-            using var connection = new SqliteConnection($"Data Source = {DbFileName}");
+            using var connection = new SqliteConnection($"Data Source={DbFileName}");
             connection.Open();
 
             var cmd = connection.CreateCommand();

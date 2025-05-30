@@ -11,7 +11,7 @@ namespace RystBrewery.Software.AlarmSystem
 {
     class AlarmService
     {
-        private const double MaxTempThreshold = 80;
+        private const double MaxTempThreshold = 60;
         private readonly string _logPath = "alarm_log.txt";
 
         public event Action AlarmTriggered;

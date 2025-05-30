@@ -18,6 +18,7 @@
             <Button Content="Temp Option1" Margin="1"/>
             <Button Content="Temp Option2" Margin="1"/>
             <Button Content="Temp Option3" Margin="1"/>
+            <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="10" />
             <TextBlock Text="{Binding CurrentBrewingStepDescription}" FontSize="16" Margin="10"/>
             <TextBlock Text="{Binding CurrentWashingStepDescription}" FontSize="16" Margin="10"/>
         </StackPanel>
@@ -36,7 +37,6 @@
                 <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Washing_Click"/>
                 <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
                 <Button Content="Pause" Width="75" Height="20" Margin="10,0,0,0" Click="Pause_Click" />
-                <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="10" />
             </StackPanel>
 
         <!-- Chart displaying temperature -->

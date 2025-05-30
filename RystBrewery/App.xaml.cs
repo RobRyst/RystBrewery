@@ -58,14 +58,14 @@ namespace RystBrewery
             }
 
             var washingRepo = new WashingRepo();
-            if (!washingRepo.WashProgramExists("Ryst IPA Wash"))
+            if (!washingRepo.WashProgramExists("Ryst IPA Washing"))
             {
                 washingRepo.AddWashProgram(new WashProgram
                 {
-                    Name = "Ryst IPA Washing Program",
+                    Name = "Ryst IPA Washing",
                     Steps = new List<WashingSteps>
         {
-            new() { Description = "Varm opp til 65°C", Time = 5 },
+            new() { Description = "Tømmer Tank", Time = 5 },
             new() { Description = "Blander Vaskemiddel", Time = 3 },
             new() { Description = "Spyl i 30min", Time = 10 }
         }

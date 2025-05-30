@@ -68,7 +68,7 @@ namespace RystBrewery.Software.Database
             {
                 var washPrograms = new List<WashProgram>();
 
-                using var connection = new SqliteConnection($"Data Source={DbFileName}");
+                using var connection = new SqliteConnection($"Data Source = {DbFileName}");
                 connection.Open();
 
                 var washCmd = connection.CreateCommand();

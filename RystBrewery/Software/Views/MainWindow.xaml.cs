@@ -22,7 +22,7 @@ namespace RystBrewery
         public MainWindow()
         {
             InitializeComponent();
-            _vm = new Software.ViewModels.MainViewModel();
+            _vm = new MainViewModel();
             DataContext = _vm;
 
             _vm.AlarmService.StatusChanged += (status) =>
@@ -31,7 +31,7 @@ namespace RystBrewery
             };
         }
 
-        private void UpdateLampStatus(string status)
+        public void UpdateLampStatus(string status)
         {
             switch (status)
             {

@@ -11,6 +11,9 @@ using LiveChartsCore.SkiaSharpView.WPF;
 using System.Windows.Threading;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
+using RystBrewery.Software;
+using System.Data;
+using System.Windows;
 
 
 
@@ -22,6 +25,7 @@ namespace RystBrewery.Software.ViewModels
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
+        public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
         public string SelectedBrewingProgram { get; set; }
         public string SelectedWashingProgram { get; set; }
 
@@ -36,19 +40,16 @@ namespace RystBrewery.Software.ViewModels
         //Testing multiple uses of _stepTimeElapsed - Otherwise change to BrewingStepTimeElapsed. 
         private int _stepTimeElapsed = 0;
 
-        public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
+        private readonly RecipeRepo _brewingRepo;
         private readonly WashingRepo _washingRepo;
-
-
 
         public ISeries[] TemperatureSeries { get; set; }
         private int _currentTemperature = 53;
         private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
-        private readonly RecipeRepo _brewingRepo;
 
         private DispatcherTimer? _brewingSimulationTimer;
         private DispatcherTimer? _washingSimulationTimer;
-        private readonly Random _random = new Random();
+
 
         public MainViewModel()
         {
@@ -79,6 +80,18 @@ namespace RystBrewery.Software.ViewModels
             };
 
             AlarmService.AlarmTriggered += OnAlarmTriggered;
+        }
+
+        public void StopSimulation()
+        {
+            _washingSimulationTimer?.Stop();
+            _brewingSimulationTimer?.Stop();
+
+        }
+
+        private void OnAlarmTriggered()
+        {
+            StopSimulation();
         }
 
         public string CurrentBrewingStepDescription
@@ -130,16 +143,6 @@ namespace RystBrewery.Software.ViewModels
                 CurrentWashingSteps.Add(washingSteps);
         }
 
-        public void StopSimulation()
-        {
-            _washingSimulationTimer?.Stop();
-        }
-
-        private void OnAlarmTriggered()
-        {
-            StopSimulation();
-        }
-
         public void StartBrewingSimulation()
         {
             if (_brewingSimulationTimer != null && _brewingSimulationTimer.IsEnabled)
@@ -187,6 +190,7 @@ namespace RystBrewery.Software.ViewModels
                 if (_currentRecipe == null || _currentBrewingStepIndex >= _currentRecipe.Steps.Count)
                 {
                     CurrentBrewingStepDescription = "Brewing complete.";
+                    ((MainWindow)Application.Current.MainWindow).UpdateLampStatus("Completed");
                     _brewingSimulationTimer?.Stop();
                     return;
                 }
@@ -229,6 +233,7 @@ namespace RystBrewery.Software.ViewModels
                 if (_currentWashProgram == null || _currentWashingStepIndex >= _currentWashProgram.Steps.Count)
                 {
                     CurrentWashingStepDescription = "Wash Complete, you can now start the Brewery again";
+                    ((MainWindow)Application.Current.MainWindow).UpdateLampStatus("Completed");
                     _washingSimulationTimer?.Stop();
                     return;
                 }
@@ -236,7 +241,7 @@ namespace RystBrewery.Software.ViewModels
                 var step = _currentWashProgram.Steps[_currentWashingStepIndex];
                 CurrentWashingStepDescription = $"Step {_currentWashingStepIndex + 1}/{_currentWashProgram.Steps.Count}: {step.Description} ({step.Time} sec)";
 
-                if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
+                if (step.Description.Contains("Tømmer Tank", StringComparison.OrdinalIgnoreCase))
                 {
                     if (_currentTemperature <= 65)
                     {
