@@ -14,6 +14,7 @@ using RystBrewery.Software.Database;
 using RystBrewery.Software;
 using System.Data;
 using System.Windows;
+using System.Security.Cryptography.X509Certificates;
 
 
 
@@ -39,6 +40,7 @@ namespace RystBrewery.Software.ViewModels
         private string _currentWashingStepDescription;
         //Testing multiple uses of _stepTimeElapsed - Otherwise change to BrewingStepTimeElapsed. 
         private int _stepTimeElapsed = 0;
+        private bool _isTankClean = true;
 
         private readonly RecipeRepo _brewingRepo;
         private readonly WashingRepo _washingRepo;
@@ -69,7 +71,6 @@ namespace RystBrewery.Software.ViewModels
                 WashingProgramOptions.Add(washProgram.Name);
             }
 
-
             TemperatureSeries = new ISeries[]
             {
                new LineSeries<int>
@@ -81,6 +82,22 @@ namespace RystBrewery.Software.ViewModels
 
             AlarmService.AlarmTriggered += OnAlarmTriggered;
         }
+
+        public bool IsTankClean
+        {
+            get => _isTankClean;
+            set
+            {
+                if (_isTankClean != value)
+                {
+                    _isTankClean = value;
+                    OnPropertyChanged(nameof(IsTankClean));
+                    OnPropertyChanged(nameof(CanStartBrewing));
+                }
+            }
+        }
+
+        public bool CanStartBrewing => IsTankClean;
 
         public void StopSimulation()
         {
@@ -192,6 +209,7 @@ namespace RystBrewery.Software.ViewModels
                     CurrentBrewingStepDescription = "Brewing complete.";
                     ((MainWindow)Application.Current.MainWindow).UpdateLampStatus("Completed");
                     _brewingSimulationTimer?.Stop();
+                    _isTankClean = false;
                     return;
                 }
 
@@ -235,6 +253,7 @@ namespace RystBrewery.Software.ViewModels
                     CurrentWashingStepDescription = "Wash Complete, you can now start the Brewery again";
                     ((MainWindow)Application.Current.MainWindow).UpdateLampStatus("Completed");
                     _washingSimulationTimer?.Stop();
+                    _isTankClean = true;
                     return;
                 }
 

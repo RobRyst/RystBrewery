@@ -59,6 +59,13 @@ namespace RystBrewery
 
         private void Start_Brewing_Click(object sender, RoutedEventArgs e)
         {
+
+            if (!_vm.CanStartBrewing)
+            {
+                MessageBox.Show("You must clean the tank before brewing");
+                return;
+            }
+
             if (string.IsNullOrEmpty(_vm.SelectedBrewingProgram))
             {
                 MessageBox.Show("Select a program to run");
@@ -76,6 +83,7 @@ namespace RystBrewery
                 MessageBox.Show("Select a program to run");
                 return;
             }
+
             MessageBox.Show($"Starter program: {_vm.SelectedWashingProgram}");
             _vm.StartWashingSimulation();
             UpdateLampStatus("Running");
