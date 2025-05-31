@@ -38,16 +38,20 @@ namespace RystBrewery.Software.ViewModels
         private WashProgram? _currentWashProgram;
         private int _currentWashingStepIndex = 0;
         private string _currentWashingStepDescription;
-        //Testing multiple uses of _stepTimeElapsed - Otherwise change to BrewingStepTimeElapsed. 
+
         private int _stepTimeElapsed = 0;
+
         private bool _isTankClean = true;
 
         private readonly RecipeRepo _brewingRepo;
         private readonly WashingRepo _washingRepo;
 
         public ISeries[] TemperatureSeries { get; set; }
-        private int _currentTemperature = 53;
+        public ISeries[] MaltSeries { get; set; }
+        private int _currentTemperature = 55;
+        private int _currentMaltInGrams = 0;
         private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
+        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
 
         private DispatcherTimer? _brewingSimulationTimer;
         private DispatcherTimer? _washingSimulationTimer;
@@ -76,7 +80,12 @@ namespace RystBrewery.Software.ViewModels
                new LineSeries<int>
                {
                    Values = _temperatureValues,
-                   Name= "Temperature"
+                   Name = "Temperature"
+               },
+               new LineSeries<int>
+               {
+                   Values = _maltValues,
+                   Name = "Malt"
                }
             };
 
@@ -149,13 +158,16 @@ namespace RystBrewery.Software.ViewModels
         public void LoadWashingSteps()
         {
             CurrentWashingSteps.Clear();
-            if (string.IsNullOrEmpty(SelectedWashingProgram)) return;
+            if (string.IsNullOrEmpty(SelectedWashingProgram))
+                return;
 
             var washProgram = _washingRepo
                 .GetAllWashPrograms()
                 .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
 
-            if (washProgram == null) return;
+            if (washProgram == null) 
+                return;
+
             foreach (var washingSteps in washProgram.Steps)
                 CurrentWashingSteps.Add(washingSteps);
         }
@@ -226,7 +238,16 @@ namespace RystBrewery.Software.ViewModels
                     }
                 }
 
+                if (step.Description.Contains("Tilsett malt", StringComparison.OrdinalIgnoreCase))
+                {
+                   if (_currentTemperature >= 65)
+                    {
+                        _currentMaltInGrams = 50;
+                    }
+                }
+
                 _temperatureValues.Add(_currentTemperature);
+                _maltValues.Add(_currentMaltInGrams);
                 AlarmService.CheckTemperature(_currentTemperature, SelectedBrewingProgram, "Ryst Tank");
 
                 _stepTimeElapsed++;

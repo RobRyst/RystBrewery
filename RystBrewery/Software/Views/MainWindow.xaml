@@ -36,7 +36,6 @@
                 <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Brewing_Click" IsEnabled="{Binding CanStartBrewing}"/>
                 <Button Content="Start" Width="75" Height="20" Margin="10,0,0,0" Click="Start_Washing_Click"/>
                 <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
-                <Button Content="Pause" Width="75" Height="20" Margin="10,0,0,0" Click="Pause_Click" />
             </StackPanel>
 
         <!-- Chart displaying temperature -->
