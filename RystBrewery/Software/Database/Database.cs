@@ -46,7 +46,16 @@ namespace RystBrewery.Software.Database
                     Description TEXT NOT NULL,
                     Time INTEGER NOT NULL,
                     FOREIGN KEY (WashingId) REFERENCES WashProgram(Id)
-            );";
+            );
+
+                CREATE TABLE Users {
+                    userId INTEGER PRIMARY KEY AUTINCREMENT, 
+                    FirstName TEXT NOT NULL, 
+                    LastName TEXT NOT NULL,
+                    Email TEXT NOT NULL, 
+                    Password TEXT NOT NULL, 
+                    MachinePassword INTEGER NOT NULL, 
+            }";
 
                 tableCmd.ExecuteNonQuery();
             }

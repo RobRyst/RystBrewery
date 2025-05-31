@@ -38,7 +38,6 @@
                 <Button Content="Stop" Width="75" Height="20" Margin="10,0,0,0" Click="Stop_Click" />
             </StackPanel>
 
-        <!-- Chart displaying temperature -->
         <lvc:CartesianChart Grid.Row="1" Series="{Binding TemperatureSeries}" LegendPosition="Right" />
         </Grid>
     </Grid>
