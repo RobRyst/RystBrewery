@@ -51,7 +51,7 @@ namespace RystBrewery
         }
         private void TankThreeBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainContentFrame.Navigate(new RystSommerølViewModel());
+            MainContentFrame.Navigate(new RystSommerØl());
         }
 
         public void UpdateLampStatus(string status)

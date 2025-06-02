@@ -20,7 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace RystBrewery.Software.ViewModels
 {
-    internal class RystSommerølViewModel : INotifyPropertyChanged
+    internal class RystSommerØlViewModel : INotifyPropertyChanged
     {
         public AlarmService AlarmService { get; } = new AlarmService();
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
@@ -59,7 +59,7 @@ namespace RystBrewery.Software.ViewModels
         private DispatcherTimer? _washingSimulationTimer;
 
 
-        public RystSommerølViewModel()
+        public RystSommerØlViewModel()
         {
             _brewingRepo = new RecipeRepo();
             var recipes = _brewingRepo.GetAllRecipes();
