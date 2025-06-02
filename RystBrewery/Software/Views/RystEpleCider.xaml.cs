@@ -13,12 +13,12 @@ using RystBrewery.Software.AlarmSystem;
 using System.Windows.Threading;
 
 
-namespace RystBrewery
+namespace RystBrewery.Software.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class RystEpleCider : Page
+    public partial class RystEpleCider : UserControl
     {
         private readonly RystEpleCiderViewModel _vm;
         public RystEpleCider()
@@ -35,15 +35,15 @@ namespace RystBrewery
 
         private void TankOneBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainContentFrame.Navigate(new RystIPA());
+            MainContentFrame.Content = new RystIPA();
         }
         private void TankTwoBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainContentFrame.Navigate(new RystEpleCider());
+            MainContentFrame.Content = new RystEpleCider();
         }
         private void TankThreeBtn_Click(object sender, RoutedEventArgs e)
         {
-            MainContentFrame.Navigate(new RystSommerølViewModel());
+            MainContentFrame.Content = new RystSommerØl();
         }
 
         public void UpdateLampStatus(string status)

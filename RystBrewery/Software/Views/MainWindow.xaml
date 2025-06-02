@@ -14,7 +14,7 @@
 
         <StackPanel Grid.Column="0" Background="#EEE" Margin="10">
             <TextBlock Text="Home" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" />
-            <Button Content="Dashboard" />
+            <Button Content="Dashboard" Click="Dashboard_Click" Margin="1"/>
             <Button Content="Ryst IPA" Click="TankOneBtn_Click" Margin="1"/>
             <Button Content="Ryst Eplecider" Click="TankTwoBtn_Click" Margin="1"/>
             <Button Content="Ryst Sommerøl" Click="TankThreeBtn_Click" Margin="1"/>

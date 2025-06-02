@@ -37,6 +37,10 @@ namespace RystBrewery
             };
         }
 
+        private void Dashboard_Click(object sender, RoutedEventArgs e)
+        {
+            MainContentFrame.Content = null;
+        }
         private void TankOneBtn_Click(object sender, RoutedEventArgs e)
         {
             MainContentFrame.Navigate(new RystIPA());

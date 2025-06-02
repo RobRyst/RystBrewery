@@ -13,12 +13,12 @@ using RystBrewery.Software.AlarmSystem;
 using System.Windows.Threading;
 
 
-namespace RystBrewery
+namespace RystBrewery.Software.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class RystSommerØl : Page
+    public partial class RystSommerØl : UserControl
     {
         private readonly RystSommerølViewModel _vm;
         public RystSommerØl()
