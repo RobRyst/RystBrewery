@@ -36,4 +36,10 @@
     <Folder Include="Software\Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="Software\Views\PasswordPopUp.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
 </Project>

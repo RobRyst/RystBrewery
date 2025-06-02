@@ -11,8 +11,6 @@ using System.Windows.Shapes;
 using RystBrewery.Software.ViewModels;
 using RystBrewery.Software.AlarmSystem;
 using System.Windows.Threading;
-using RystBrewery.Software.Views;
-using RystBrewery.Software.Database;
 
 
 namespace RystBrewery
@@ -20,15 +18,13 @@ namespace RystBrewery
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RystSommerØl : Page
     {
-        private readonly MainViewModel _vm;
-        public MainWindow()
+        private readonly RystSommerølViewModel _vm;
+        public RystSommerØl()
         {
             InitializeComponent();
-            PasswordSettings.Password();
-
-            _vm = new MainViewModel();
+            _vm = new RystSommerølViewModel();
             DataContext = _vm;
 
             _vm.AlarmService.StatusChanged += (status) =>
@@ -79,19 +75,6 @@ namespace RystBrewery
         private void Start_Brewing_Click(object sender, RoutedEventArgs e)
         {
 
-            var popup = new PasswordPopUp();
-            if (popup.ShowDialog() == true)
-            {
-                string inputPassword = popup.InputPassword;
-
-                var authenticatePassword = new PasswordAuth();
-                if (!authenticatePassword.AuthPassword(inputPassword))
-                {
-                    MessageBox.Show("Incorrect Password. Access Denied");
-                    return;
-                }
-            }
-
             if (!_vm.CanStartBrewing)
             {
                 MessageBox.Show("You must clean the tank before brewing");
@@ -127,7 +110,8 @@ namespace RystBrewery
             UpdateLampStatus("Paused");
         }
 
-        private void Stop_Click(object sender, RoutedEventArgs e) {
+        private void Stop_Click(object sender, RoutedEventArgs e)
+        {
             _vm.StopSimulation();
             UpdateLampStatus("Stopped");
         }

@@ -20,14 +20,13 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace RystBrewery.Software.ViewModels
 {
-    internal class MainViewModel : INotifyPropertyChanged
+    internal class RystEpleCiderViewModel : INotifyPropertyChanged
     {
         public AlarmService AlarmService { get; } = new AlarmService();
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
-
         public event Action<string>? StatusChanged;
         public string SelectedBrewingProgram { get; set; }
         public string SelectedWashingProgram { get; set; }
@@ -59,7 +58,7 @@ namespace RystBrewery.Software.ViewModels
         private DispatcherTimer? _washingSimulationTimer;
 
 
-        public MainViewModel()
+        public RystEpleCiderViewModel()
         {
             _brewingRepo = new RecipeRepo();
             var recipes = _brewingRepo.GetAllRecipes();
@@ -167,7 +166,7 @@ namespace RystBrewery.Software.ViewModels
                 .GetAllWashPrograms()
                 .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
 
-            if (washProgram == null) 
+            if (washProgram == null)
                 return;
 
             foreach (var washingSteps in washProgram.Steps)
@@ -242,7 +241,7 @@ namespace RystBrewery.Software.ViewModels
 
                 if (step.Description.Contains("Tilsett malt", StringComparison.OrdinalIgnoreCase))
                 {
-                   if (_currentTemperature >= 65)
+                    if (_currentTemperature >= 65)
                     {
                         _currentMaltInGrams = 50;
                     }
