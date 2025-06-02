@@ -49,6 +49,7 @@ namespace RystBrewery.Software.ViewModels
 
         public ISeries[] TemperatureSeries { get; set; }
         public ISeries[] MaltSeries { get; set; }
+
         private int _currentTemperature = 55;
         private int _currentMaltInGrams = 0;
         private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
