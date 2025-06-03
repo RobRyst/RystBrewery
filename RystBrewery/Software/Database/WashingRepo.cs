@@ -64,7 +64,12 @@ namespace RystBrewery.Software.Database
                 return count > 0;
             }
 
-            public List<WashProgram> GetAllWashPrograms()
+        public WashProgram? GetWashProgramByName(string name)
+        {
+            return GetAllWashPrograms().FirstOrDefault(washProgram => washProgram.Name == name);
+        }
+
+        public List<WashProgram> GetAllWashPrograms()
             {
                 var washPrograms = new List<WashProgram>();
 

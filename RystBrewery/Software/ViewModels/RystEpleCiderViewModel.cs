@@ -62,6 +62,12 @@ namespace RystBrewery.Software.ViewModels
         {
             _brewingRepo = new RecipeRepo();
             var recipes = _brewingRepo.GetAllRecipes();
+            _currentRecipe = _brewingRepo.GetRecipeByName("Ryst Eplecider"); ;
+
+            if (_currentRecipe != null)
+            {
+                SelectedBrewingProgram = _currentRecipe.Name;
+            }
 
             foreach (var recipe in recipes)
             {
@@ -70,6 +76,12 @@ namespace RystBrewery.Software.ViewModels
 
             _washingRepo = new WashingRepo();
             var washPrograms = _washingRepo.GetAllWashPrograms();
+            _currentWashProgram = _washingRepo.GetWashProgramByName("Ryst Eplecider Washing"); ;
+
+            if (_currentWashProgram != null)
+            {
+                SelectedWashingProgram = _currentWashProgram.Name;
+            }
 
             foreach (var washProgram in washPrograms)
             {

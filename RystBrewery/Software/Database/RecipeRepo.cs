@@ -65,6 +65,11 @@ namespace RystBrewery.Software.Database
             return count > 0;
         }
 
+        public Recipe? GetRecipeByName(string name)
+        {
+            return GetAllRecipes().FirstOrDefault(r => r.Name == name);
+        }
+
         public List<Recipe> GetAllRecipes()
         {
             var recipes = new List<Recipe>();

@@ -29,8 +29,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Frame x:Name="MainContentFrame" Grid.Column="1" Margin="10" NavigationUIVisibility="hidden" />
-            <lvc:CartesianChart Grid.Row="1" Series="{Binding TemperatureSeries}" LegendPosition="Right" />
+            <Frame x:Name="MainContentFrame" Grid.Column="1" Grid.RowSpan="2" Margin="10" NavigationUIVisibility="hidden" />
         </Grid>
     </Grid>
 </Window>

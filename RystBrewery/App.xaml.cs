@@ -72,6 +72,34 @@ namespace RystBrewery
                 });
             }
 
+            if (!washingRepo.WashProgramExists("Ryst Eplecider Washing"))
+            {
+                washingRepo.AddWashProgram(new WashProgram
+                {
+                    Name = "Ryst Eplecider Washing",
+                    Steps = new List<WashingSteps>
+        {
+            new() { Description = "Tømmer Epler", Time = 5 },
+            new() { Description = "Blander Vaskemiddel", Time = 3 },
+            new() { Description = "Spyl i 30min", Time = 10 }
+        }
+                });
+            }
+
+            if (!washingRepo.WashProgramExists("Ryst Sommerøl Washing"))
+            {
+                washingRepo.AddWashProgram(new WashProgram
+                {
+                    Name = "Ryst Sommerøl Washing",
+                    Steps = new List<WashingSteps>
+        {
+            new() { Description = "Tømmer Epler", Time = 5 },
+            new() { Description = "Blander Vaskemiddel", Time = 3 },
+            new() { Description = "Spyl i 30min", Time = 10 }
+        }
+                });
+            }
+
             recipeRepo.GetAllRecipes();
             washingRepo.GetAllWashPrograms();
 
