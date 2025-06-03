@@ -28,6 +28,7 @@ namespace RystBrewery.Software.ViewModels
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
         public event Action<string>? StatusChanged;
+
         public string SelectedBrewingProgram { get; set; }
         public string SelectedWashingProgram { get; set; }
 
@@ -157,13 +158,16 @@ namespace RystBrewery.Software.ViewModels
         public void LoadBrewingSteps()
         {
             CurrentBrewingSteps.Clear();
-            if (string.IsNullOrEmpty(SelectedBrewingProgram)) return;
+            if (string.IsNullOrEmpty(SelectedBrewingProgram))
+                return;
 
             var recipe = _brewingRepo
                 .GetAllRecipes()
                 .FirstOrDefault(recipe => recipe.Name == SelectedBrewingProgram);
 
-            if (recipe == null) return;
+            if (recipe == null) 
+                return;
+
             foreach (var brewingStep in recipe.Steps)
                 CurrentBrewingSteps.Add(brewingStep);
         }
