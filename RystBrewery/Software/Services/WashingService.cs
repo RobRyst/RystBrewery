@@ -1,6 +1,7 @@
 ﻿using RystBrewery.Software.Database;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace RystBrewery.Software.Services
         public event Action<string> WashingStepChanged;
         public event Action IsCompleted;
 
+        private readonly ObservableCollection<int> _washingValues = new ObservableCollection<int>();
+        public ObservableCollection<int> WashingValues => _washingValues;
         private DispatcherTimer _washingTimer;
         private WashProgram _washProgram;
         private int _washingStepIndex;
@@ -34,6 +37,7 @@ namespace RystBrewery.Software.Services
             _washingStepIndex = 0;
             _stepTimeElapsed = 0;
             _washingTimer.Start();
+
         }
 
         public void StopWashing()
@@ -51,7 +55,6 @@ namespace RystBrewery.Software.Services
                 return;
             }
 
-            // Fixed syntax - removed incorrect * operators
             var step = _washProgram.Steps[_washingStepIndex];
             WashingStepChanged?.Invoke($"Step {_washingStepIndex + 1}/{_washProgram.Steps.Count}: {step.Description} ({step.Time}s)");
 
@@ -61,6 +64,9 @@ namespace RystBrewery.Software.Services
                 _washingStepIndex++;
                 _stepTimeElapsed = 0;
             }
+
+            var washingValues = new Random().Next(20, 100);
+            WashingValues.Add(washingValues);
         }
     }
 }

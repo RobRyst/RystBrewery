@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using RystBrewery.Software.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace RystBrewery.Software.Views
@@ -27,16 +28,24 @@ namespace RystBrewery.Software.Views
         public RystEpleCider()
         {
             InitializeComponent();
-            var brewingService = new BrewingService();
-            var washingService = new WashingService();
-
-            _vm = new RystEpleCiderViewModel(brewingService, washingService);
+            _vm = AppService.Services.GetRequiredService<RystEpleCiderViewModel>();
             DataContext = _vm;
+        }
 
-            _vm.AlarmService.StatusChanged += (status) =>
-            {
-                Dispatcher.Invoke(() => UpdateLampStatus(status));
-            };
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vm.StatusChanged += Vm_StatusChanged;
+            UpdateLampStatusFromCurrentState();
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _vm.StatusChanged -= Vm_StatusChanged;
+        }
+
+        private void Vm_StatusChanged(string status)
+        {
+            Dispatcher.Invoke(() => UpdateLampStatus(status));
         }
 
         public void UpdateLampStatus(string status)
@@ -62,6 +71,25 @@ namespace RystBrewery.Software.Views
                 case "Error":
                     StatusLight.Fill = Brushes.Red;
                     break;
+            }
+        }
+
+        private void UpdateLampStatusFromCurrentState()
+        {
+            if (_vm == null)
+                return;
+
+            if (_vm.IsBrewingRunning || _vm.IsWashingRunning)
+            {
+                UpdateLampStatus("Running");
+            }
+            else if (!_vm.IsTankClean)
+            {
+                UpdateLampStatus("Completed");
+            }
+            else
+            {
+                UpdateLampStatus("Stopped");
             }
         }
 

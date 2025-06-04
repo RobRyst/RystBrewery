@@ -35,8 +35,12 @@ namespace RystBrewery.Software.ViewModels
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
+        
+
         public event Action<string>? StatusChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private int _stepTimeElapsed = 0;
 
         private string _selectedBrewingProgram { get; set; }
         public string SelectedBrewingProgram
@@ -87,9 +91,6 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-
-        private int _stepTimeElapsed = 0;
-
         private bool _isTankClean = true;
         public bool IsTankClean
         {
@@ -101,6 +102,9 @@ namespace RystBrewery.Software.ViewModels
                 OnPropertyChanged(nameof(CanStartBrewing));
             }
         }
+
+        public bool IsBrewingRunning => _brewingService.IsRunning;
+        public bool IsWashingRunning => _washingService.IsRunning;
 
         public bool CanStartBrewing => IsTankClean;
 
@@ -115,8 +119,29 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
-        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
+        private ISeries[] _washingSeries;
+        public ISeries[] WashingSeries
+        {
+            get => _washingSeries;
+            set
+            {
+                _washingSeries = value;
+                OnPropertyChanged(nameof(_washingSeries));
+            }
+        }
+
+        private ISeries[] _combinedSeries;
+        public ISeries[] CombinedSeries
+        {
+            get => _combinedSeries;
+            set
+            {
+                _combinedSeries = value;
+                OnPropertyChanged(nameof(CombinedSeries));
+            }
+        }
+
+
 
 
         public RystEpleCiderViewModel(IBrewingService brewingService, IWashingService washingService)
@@ -154,6 +179,18 @@ namespace RystBrewery.Software.ViewModels
                      new LineSeries<int> { Values = _brewingService.TemperatureValues, Name = "Temperature" },
                      new LineSeries<int> { Values = _brewingService.MaltValues, Name = "Malt" }
                 };
+
+            WashingSeries = new ISeries[]
+                {
+            new LineSeries<int> { Values = _washingService.WashingValues, Name = "Flow" }
+                };
+
+            CombinedSeries = new ISeries[]
+{
+    new LineSeries<int> { Values = _brewingService.TemperatureValues, Name = "Temperature" },
+    new LineSeries<int> { Values = _brewingService.MaltValues, Name = "Malt" },
+    new LineSeries<int> { Values = _washingService.WashingValues, Name = "Flow" }
+};
         }
 
         private void ServiceEvents()
@@ -188,13 +225,17 @@ namespace RystBrewery.Software.ViewModels
             var recipe = _brewingRepo.GetRecipeByName(SelectedBrewingProgram);
             if (recipe != null)
                 _brewingService.StartBrewing(recipe);
+                StatusChanged?.Invoke("Running");
         }
 
         public void StartWashing()
         {
             var program = _washingRepo.GetWashProgramByName(SelectedWashingProgram);
             if (program != null)
+            {
                 _washingService.StartWashing(program);
+                StatusChanged?.Invoke("Running");
+            }
         }
 
         public void LoadBrewingSteps()

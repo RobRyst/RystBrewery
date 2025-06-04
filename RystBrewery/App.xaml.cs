@@ -1,8 +1,10 @@
 ﻿using RystBrewery.Software.Database;
 using RystBrewery.Software.ViewModels;
+using RystBrewery.Software.Services;
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using RystBrewery.Software;
 
 namespace RystBrewery
 {
@@ -10,6 +12,7 @@ namespace RystBrewery
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppService.Init();
             base.OnStartup(e);
             Database.InitializeDatabase();
             var recipeRepo = new RecipeRepo();

@@ -1,12 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LiveChartsCore;
+using Microsoft.Extensions.DependencyInjection;
+using RystBrewery.Software.Services;
+using RystBrewery.Software.ViewModels;
 
-namespace RystBrewery.Software.Services
+namespace RystBrewery.Software
 {
-    class AppService
+    public static class AppService
     {
+        public static ServiceProvider Services { get; private set; }
+
+        public static void Init()
+        {
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddSingleton<IBrewingService, BrewingService>();
+            serviceCollection.AddSingleton<IWashingService, WashingService>();
+            serviceCollection.AddTransient<RystEpleCiderViewModel>();
+            serviceCollection.AddSingleton<RystEpleCiderViewModel>();
+
+            Services = serviceCollection.BuildServiceProvider();
+        }
     }
 }

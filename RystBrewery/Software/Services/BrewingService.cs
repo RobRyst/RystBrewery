@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace RystBrewery.Software.Services
@@ -57,8 +58,11 @@ namespace RystBrewery.Software.Services
 
         private void InitializeChartData()
         {
-            _temperatureValues.Add(_currentTemperature);
-            _maltValues.Add(_currentMaltInGrams);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _temperatureValues.Add(_currentTemperature);
+                _maltValues.Add(_currentMaltInGrams);
+            });
         }
 
         public void StartBrewing(Recipe recipe)
