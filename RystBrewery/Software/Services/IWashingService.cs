@@ -9,10 +9,10 @@ namespace RystBrewery.Software.Services
 {
     public interface IWashingService
     {
-        event Action<string> StepChanged;
-        event Action Completed;
+        event Action<string> WashingStepChanged;
+        event Action IsCompleted;
         bool IsRunning { get; }
-        void Start(WashProgram program);
-        void Stop();
+        void StartWashing(WashProgram program);
+        void StopWashing();
     }
 }

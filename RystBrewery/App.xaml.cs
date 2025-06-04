@@ -11,21 +11,20 @@ namespace RystBrewery
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
             Database.InitializeDatabase();
-
             var recipeRepo = new RecipeRepo();
+
             if (!recipeRepo.RecipeExists("Ryst IPA"))
             {
                 recipeRepo.AddRecipe(new Recipe
                 {
                     Name = "Ryst IPA",
                     Steps = new List<BrewingSteps>
-        {
-            new() { Description = "Varm opp til 65°C", Time = 5 },
-            new() { Description = "Tilsett malt", Time = 3 },
-            new() { Description = "Kok i 60 min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Tilsett malt", Time = 5 },
+                        new() { Description = "Kok i 60 min", Time = 10 }
+                    }
                 });
             }
 
@@ -35,11 +34,11 @@ namespace RystBrewery
                 {
                     Name = "Ryst Sommerøl",
                     Steps = new List<BrewingSteps>
-        {
-            new() { Description = "Varm opp til 65°C", Time = 5 },
-            new() { Description = "Tilsett Sommer", Time = 3 },
-            new() { Description = "Kok i 60 min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Tilsett Sommer", Time = 5 },
+                        new() { Description = "Kok i 60 min", Time = 10 }
+                    }
                 });
             }
 
@@ -49,26 +48,27 @@ namespace RystBrewery
                 {
                     Name = "Ryst Eplecider",
                     Steps = new List<BrewingSteps>
-        {
-            new() { Description = "Varm opp til 65°C", Time = 5 },
-            new() { Description = "Tilsett EPLE", Time = 3 },
-            new() { Description = "Kok i 60 min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Tilsett EPLE", Time = 5 },
+                        new() { Description = "Kok i 60 min", Time = 10 }
+                    }
                 });
             }
 
             var washingRepo = new WashingRepo();
+
             if (!washingRepo.WashProgramExists("Ryst IPA Washing"))
             {
                 washingRepo.AddWashProgram(new WashProgram
                 {
                     Name = "Ryst IPA Washing",
                     Steps = new List<WashingSteps>
-        {
-            new() { Description = "Tømmer Tank", Time = 5 },
-            new() { Description = "Blander Vaskemiddel", Time = 3 },
-            new() { Description = "Spyl i 30min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Tømmer Tank", Time = 10 },
+                        new() { Description = "Blander Vaskemiddel", Time = 5 },
+                        new() { Description = "Spyl i 30min", Time = 10 }
+                    }
                 });
             }
 
@@ -78,11 +78,11 @@ namespace RystBrewery
                 {
                     Name = "Ryst Eplecider Washing",
                     Steps = new List<WashingSteps>
-        {
-            new() { Description = "Tømmer Epler", Time = 5 },
-            new() { Description = "Blander Vaskemiddel", Time = 3 },
-            new() { Description = "Spyl i 30min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Tømmer Epler", Time = 10 },
+                        new() { Description = "Blander Vaskemiddel", Time = 5 },
+                        new() { Description = "Spyl i 30min", Time = 10 }
+                    }
                 });
             }
 
@@ -92,11 +92,11 @@ namespace RystBrewery
                 {
                     Name = "Ryst Sommerøl Washing",
                     Steps = new List<WashingSteps>
-        {
-            new() { Description = "Tømmer Epler", Time = 5 },
-            new() { Description = "Blander Vaskemiddel", Time = 3 },
-            new() { Description = "Spyl i 30min", Time = 10 }
-        }
+                    {
+                        new() { Description = "Tømmer Sommerøl rester", Time = 10 },
+                        new() { Description = "Blander Vaskemiddel", Time = 5 },
+                        new() { Description = "Spyl i 30min", Time = 10 }
+                    }
                 });
             }
 

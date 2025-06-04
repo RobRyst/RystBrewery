@@ -1,6 +1,7 @@
 ﻿using RystBrewery.Software.Database;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,5 +15,8 @@ namespace RystBrewery.Software.Services
         bool IsRunning { get; }
         void StartBrewing(Recipe recipe);
         void StopBrewing();
+
+        ObservableCollection<int> TemperatureValues { get; }
+        ObservableCollection<int> MaltValues { get; }
     }
 }

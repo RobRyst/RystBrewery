@@ -1,5 +1,6 @@
 ﻿using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
+using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
 using System.Text;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using RystBrewery.Software.Services;
 
 
 namespace RystBrewery.Software.Views
@@ -25,7 +27,10 @@ namespace RystBrewery.Software.Views
         public RystEpleCider()
         {
             InitializeComponent();
-            _vm = new RystEpleCiderViewModel();
+            var brewingService = new BrewingService();
+            var washingService = new WashingService();
+
+            _vm = new RystEpleCiderViewModel(brewingService, washingService);
             DataContext = _vm;
 
             _vm.AlarmService.StatusChanged += (status) =>
@@ -88,7 +93,7 @@ namespace RystBrewery.Software.Views
                 return;
             }
             MessageBox.Show($"Starter program: {_vm.SelectedBrewingProgram}");
-            _vm.StartBrewingSimulation();
+            _vm.StartBrewing();
             UpdateLampStatus("Running");
         }
 
@@ -101,19 +106,19 @@ namespace RystBrewery.Software.Views
             }
 
             MessageBox.Show($"Starter program: {_vm.SelectedWashingProgram}");
-            _vm.StartWashingSimulation();
+            _vm.StartWashing();
             UpdateLampStatus("Running");
         }
 
         private void Pause_Click(object sender, RoutedEventArgs e)
         {
-            _vm.StopSimulation();
+            _vm.StopAll();
             UpdateLampStatus("Paused");
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            _vm.StopSimulation();
+            _vm.StopAll();
             UpdateLampStatus("Stopped");
         }
     }
