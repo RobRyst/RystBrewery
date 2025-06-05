@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
+
 namespace RystBrewery.Software.AlarmSystem
 {
     class AlarmService
     {
         private const double MaxTempThreshold = 80;
-        private readonly string _logPath = "alarm_log.txt";
+        private readonly string _alarmLogPath = "alarm_log.txt";
+        private readonly string _allEventsPath = "all_events_log.txt";
 
         public event Action AlarmTriggered;
         public event Action<string>? StatusChanged;
@@ -35,12 +37,16 @@ namespace RystBrewery.Software.AlarmSystem
 
         }
 
-
+        public void LogEvent(string message, string program)
+        {
+            string logEntry = $"{DateTime.Now:u}: {message}";
+            File.AppendAllText(_allEventsPath, logEntry + Environment.NewLine);
+        }
 
         private void LogAlarm(string program, string tank, double temp)
         {
             string logEntry = $"{DateTime.Now:u}: Alarm triggered for program '{program}' on tank '{tank}' with temperature {temp}°C.";
-            File.AppendAllText(_logPath, logEntry + Environment.NewLine);
+            File.AppendAllText(_alarmLogPath, logEntry + Environment.NewLine);
         }
     }
 }

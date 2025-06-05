@@ -95,18 +95,18 @@ namespace RystBrewery.Software.Views
 
         private void Start_Brewing_Click(object sender, RoutedEventArgs e)
         {
-
             var popup = new PasswordPopUp();
-            if (popup.ShowDialog() == true)
-            {
-                string inputPassword = popup.InputPassword;
+            bool? dialogResult = popup.ShowDialog();
 
-                var authenticatePassword = new PasswordAuth();
-                if (!authenticatePassword.AuthPassword(inputPassword))
-                {
-                    MessageBox.Show("Incorrect Password. Access Denied");
-                    return;
-                }
+            if (dialogResult != true) return;
+
+            string inputPassword = popup.InputPassword;
+            var authenticatePassword = new PasswordAuth();
+
+            if (!authenticatePassword.AuthPassword(inputPassword))
+            {
+                MessageBox.Show("Incorrect Password. Access Denied");
+                return;
             }
 
             if (!_vm.CanStartBrewing)
@@ -127,6 +127,20 @@ namespace RystBrewery.Software.Views
 
         private void Start_Washing_Click(object sender, RoutedEventArgs e)
         {
+            var popup = new PasswordPopUp();
+            bool? dialogResult = popup.ShowDialog();
+
+            if (dialogResult != true) return;
+
+            string inputPassword = popup.InputPassword;
+            var authenticatePassword = new PasswordAuth();
+
+            if (!authenticatePassword.AuthPassword(inputPassword))
+            {
+                MessageBox.Show("Incorrect Password. Access Denied");
+                return;
+            }
+
             if (string.IsNullOrEmpty(_vm.SelectedWashingProgram))
             {
                 MessageBox.Show("Select a program to run");
@@ -148,6 +162,7 @@ namespace RystBrewery.Software.Views
         {
             _vm.StopAll();
             UpdateLampStatus("Stopped");
+
         }
     }
 }

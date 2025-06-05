@@ -1,5 +1,6 @@
 ﻿using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
+using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
 using System.Text;
 using System.Windows;
@@ -12,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using RystBrewery.Software.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace RystBrewery.Software.Views
@@ -25,13 +28,24 @@ namespace RystBrewery.Software.Views
         public RystSommerØl()
         {
             InitializeComponent();
-            _vm = new RystSommerØlViewModel();
+            _vm = AppService.Services.GetRequiredService<RystSommerØlViewModel>();
             DataContext = _vm;
+        }
 
-            _vm.AlarmService.StatusChanged += (status) =>
-            {
-                Dispatcher.Invoke(() => UpdateLampStatus(status));
-            };
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vm.StatusChanged += Vm_StatusChanged;
+            UpdateLampStatusFromCurrentState();
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _vm.StatusChanged -= Vm_StatusChanged;
+        }
+
+        private void Vm_StatusChanged(string status)
+        {
+            Dispatcher.Invoke(() => UpdateLampStatus(status));
         }
 
         public void UpdateLampStatus(string status)
@@ -60,20 +74,39 @@ namespace RystBrewery.Software.Views
             }
         }
 
+        private void UpdateLampStatusFromCurrentState()
+        {
+            if (_vm == null)
+                return;
+
+            if (_vm.IsBrewingRunning || _vm.IsWashingRunning)
+            {
+                UpdateLampStatus("Running");
+            }
+            else if (!_vm.IsTankClean)
+            {
+                UpdateLampStatus("Completed");
+            }
+            else
+            {
+                UpdateLampStatus("Stopped");
+            }
+        }
+
         private void Start_Brewing_Click(object sender, RoutedEventArgs e)
         {
-
             var popup = new PasswordPopUp();
-            if (popup.ShowDialog() == true)
-            {
-                string inputPassword = popup.InputPassword;
+            bool? dialogResult = popup.ShowDialog();
 
-                var authenticatePassword = new PasswordAuth();
-                if (!authenticatePassword.AuthPassword(inputPassword))
-                {
-                    MessageBox.Show("Incorrect Password. Access Denied");
-                    return;
-                }
+            if (dialogResult != true) return;
+
+            string inputPassword = popup.InputPassword;
+            var authenticatePassword = new PasswordAuth();
+
+            if (!authenticatePassword.AuthPassword(inputPassword))
+            {
+                MessageBox.Show("Incorrect Password. Access Denied");
+                return;
             }
 
             if (!_vm.CanStartBrewing)
@@ -88,12 +121,26 @@ namespace RystBrewery.Software.Views
                 return;
             }
             MessageBox.Show($"Starter program: {_vm.SelectedBrewingProgram}");
-            _vm.StartBrewingSimulation();
+            _vm.StartBrewing();
             UpdateLampStatus("Running");
         }
 
         private void Start_Washing_Click(object sender, RoutedEventArgs e)
         {
+            var popup = new PasswordPopUp();
+            bool? dialogResult = popup.ShowDialog();
+
+            if (dialogResult != true) return;
+
+            string inputPassword = popup.InputPassword;
+            var authenticatePassword = new PasswordAuth();
+
+            if (!authenticatePassword.AuthPassword(inputPassword))
+            {
+                MessageBox.Show("Incorrect Password. Access Denied");
+                return;
+            }
+
             if (string.IsNullOrEmpty(_vm.SelectedWashingProgram))
             {
                 MessageBox.Show("Select a program to run");
@@ -101,19 +148,19 @@ namespace RystBrewery.Software.Views
             }
 
             MessageBox.Show($"Starter program: {_vm.SelectedWashingProgram}");
-            _vm.StartWashingSimulation();
+            _vm.StartWashing();
             UpdateLampStatus("Running");
         }
 
         private void Pause_Click(object sender, RoutedEventArgs e)
         {
-            _vm.StopSimulation();
+            _vm.StopAll();
             UpdateLampStatus("Paused");
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
-            _vm.StopSimulation();
+            _vm.StopAll();
             UpdateLampStatus("Stopped");
         }
     }

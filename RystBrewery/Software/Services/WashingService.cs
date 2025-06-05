@@ -1,10 +1,6 @@
 ﻿using RystBrewery.Software.Database;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -15,24 +11,24 @@ namespace RystBrewery.Software.Services
         public event Action<string> WashingStepChanged;
         public event Action IsCompleted;
 
-        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
+        private readonly ObservableCollection<int> _temperatureValues = new();
         public ObservableCollection<int> TemperatureValues => _temperatureValues;
         private int _currentTemperature = 55;
 
-        private readonly ObservableCollection<int> _rinseValues = new ObservableCollection<int>();
+        private readonly ObservableCollection<int> _rinseValues = new();
         public ObservableCollection<int> RinseValues => _rinseValues;
         private int _currentRinsePower = 0;
 
-        private readonly ObservableCollection<int> _detergentValues = new ObservableCollection<int>();
+        private readonly ObservableCollection<int> _detergentValues = new();
         public ObservableCollection<int> DetergentValues => _detergentValues;
         private int _currentDetergentValues = 0;
 
-        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
+        private readonly ObservableCollection<int> _maltValues = new();
         public ObservableCollection<int> MaltValues => _maltValues;
         private int _currentMaltValues = 0;
 
         private DispatcherTimer _washingTimer;
-        private WashProgram _washProgram;
+        private WashProgram? _washProgram;
         private int _washingStepIndex;
         private int _stepTimeElapsed;
 
@@ -59,7 +55,6 @@ namespace RystBrewery.Software.Services
         public void StartWashing(WashProgram program)
         {
             if (IsRunning) return;
-
 
             _washProgram = program;
             _washingStepIndex = 0;
@@ -91,9 +86,12 @@ namespace RystBrewery.Software.Services
             }
 
             var step = _washProgram.Steps[_washingStepIndex];
-            WashingStepChanged?.Invoke($"Step {_washingStepIndex + 1}/{_washProgram.Steps.Count}: {step.Description} ({step.Time}s)");
+            int remaining = step.Time - _stepTimeElapsed;
+
+            WashingStepChanged?.Invoke($"Step {_washingStepIndex + 1}/{_washProgram.Steps.Count}: {step.Description} - {remaining}s remaining");
 
             ProcessWashingStep(step);
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _temperatureValues.Add(_currentTemperature);
@@ -121,11 +119,10 @@ namespace RystBrewery.Software.Services
                     _currentMaltValues = Math.Max(_currentMaltValues - 10, 0);
                     _currentDetergentValues = 0;
                 }
-                else if (step.Description.Contains("Vaskemiddel tilsettes", StringComparison.OrdinalIgnoreCase) ||
-                         step.Description.Contains("Vaskemiddel", StringComparison.OrdinalIgnoreCase))
+                else if (step.Description.Contains("Vaskemiddel", StringComparison.OrdinalIgnoreCase))
                 {
-                        _currentDetergentValues = 100;
-                        _currentRinsePower = 0;
+                    _currentDetergentValues = 100;
+                    _currentRinsePower = 0;
                 }
             }
 

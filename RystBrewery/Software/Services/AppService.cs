@@ -1,24 +1,32 @@
-﻿using LiveChartsCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
 
-namespace RystBrewery.Software
+public static class AppService
 {
-    public static class AppService
+    public static ServiceProvider Services { get; private set; }
+
+    public static void Init()
     {
-        public static ServiceProvider Services { get; private set; }
+        var serviceCollection = new ServiceCollection();
 
-        public static void Init()
-        {
-            var serviceCollection = new ServiceCollection();
+        // Brewing services per recipe
+        serviceCollection.AddSingleton<RystIPABrewingService>();
+        serviceCollection.AddSingleton<RystEpleciderBrewingService>();
+        serviceCollection.AddSingleton<RystSommerølBrewingService>();
 
-            serviceCollection.AddSingleton<IBrewingService, BrewingService>();
-            serviceCollection.AddSingleton<IWashingService, WashingService>();
-            serviceCollection.AddTransient<RystEpleCiderViewModel>();
-            serviceCollection.AddSingleton<RystEpleCiderViewModel>();
+        // Washing services per recipe
+        serviceCollection.AddSingleton<RystIPAWashingService>();
+        serviceCollection.AddSingleton<RystEpleciderWashingService>();
+        serviceCollection.AddSingleton<RystSommerølWashingService>();
 
-            Services = serviceCollection.BuildServiceProvider();
-        }
+        // ViewModels
+        serviceCollection.AddSingleton<RystIPAViewModel>();
+        serviceCollection.AddSingleton<RystEpleCiderViewModel>();
+        serviceCollection.AddSingleton<RystSommerØlViewModel>();
+
+        Services = serviceCollection.BuildServiceProvider();
     }
+
 }
+

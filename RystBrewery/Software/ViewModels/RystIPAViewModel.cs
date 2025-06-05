@@ -1,20 +1,22 @@
-﻿using System;
+﻿using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.WPF;
+using RystBrewery.Software;
+using RystBrewery.Software.AlarmSystem;
+using RystBrewery.Software.Database;
+using RystBrewery.Software.Services;
+using RystBrewery.Software.Views;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.WPF;
-using System.Windows.Threading;
-using RystBrewery.Software.AlarmSystem;
-using RystBrewery.Software.Database;
-using RystBrewery.Software;
-using System.Data;
 using System.Windows;
-using System.Security.Cryptography.X509Certificates;
+using System.Windows.Threading;
 
 
 
@@ -22,118 +24,54 @@ namespace RystBrewery.Software.ViewModels
 {
     internal class RystIPAViewModel : INotifyPropertyChanged
     {
+
+        private readonly RecipeRepo _brewingRepo;
+        private readonly WashingRepo _washingRepo;
+        private readonly IBrewingService _brewingService;
+        private readonly IWashingService _washingService;
+
+
+
         public AlarmService AlarmService { get; } = new AlarmService();
+
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
+
+
         public event Action<string>? StatusChanged;
-        public string SelectedBrewingProgram { get; set; }
-        public string SelectedWashingProgram { get; set; }
-
-
-        private Recipe? _currentRecipe;
-        private int _currentBrewingStepIndex = 0;
-        private string _currentBrewingStepDescription;
-
-        private WashProgram? _currentWashProgram;
-        private int _currentWashingStepIndex = 0;
-        private string _currentWashingStepDescription;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private int _stepTimeElapsed = 0;
 
-        private bool _isTankClean = true;
-
-        private readonly RecipeRepo _brewingRepo;
-        private readonly WashingRepo _washingRepo;
-
-        public ISeries[] TemperatureSeries { get; set; }
-        public ISeries[] MaltSeries { get; set; }
-        private int _currentTemperature = 55;
-        private int _currentMaltInGrams = 0;
-        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
-        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
-
-        private DispatcherTimer? _brewingSimulationTimer;
-        private DispatcherTimer? _washingSimulationTimer;
-
-
-        public RystIPAViewModel()
+        private string _selectedBrewingProgram { get; set; }
+        public string SelectedBrewingProgram
         {
-            _brewingRepo = new RecipeRepo();
-            var recipes = _brewingRepo.GetAllRecipes();
-
-            _currentRecipe = _brewingRepo.GetRecipeByName("Ryst IPA"); ;
-
-            if (_currentRecipe != null)
-            {
-                SelectedBrewingProgram = _currentRecipe.Name;
-            }
-
-            foreach (var recipe in recipes)
-            {
-                BrewingProgramOptions.Add(recipe.Name);
-            }
-
-            _washingRepo = new WashingRepo();
-            var washPrograms = _washingRepo.GetAllWashPrograms();
-            _currentWashProgram = _washingRepo.GetWashProgramByName("Ryst IPA Washing"); ;
-
-            if (_currentWashProgram != null)
-            {
-                SelectedWashingProgram = _currentWashProgram.Name;
-            }
-
-            foreach (var washProgram in washPrograms)
-            {
-                WashingProgramOptions.Add(washProgram.Name);
-            }
-
-            TemperatureSeries = new ISeries[]
-            {
-               new LineSeries<int>
-               {
-                   Values = _temperatureValues,
-                   Name = "Temperature"
-               },
-               new LineSeries<int>
-               {
-                   Values = _maltValues,
-                   Name = "Malt"
-               }
-            };
-
-            AlarmService.AlarmTriggered += OnAlarmTriggered;
-        }
-
-        public bool IsTankClean
-        {
-            get => _isTankClean;
+            get => _selectedBrewingProgram;
             set
             {
-                if (_isTankClean != value)
-                {
-                    _isTankClean = value;
-                    OnPropertyChanged(nameof(IsTankClean));
-                    OnPropertyChanged(nameof(CanStartBrewing));
-                }
+                _selectedBrewingProgram = value;
+                OnPropertyChanged(nameof(SelectedBrewingProgram));
+                LoadBrewingSteps();
             }
         }
 
-        public bool CanStartBrewing => IsTankClean;
-
-        public void StopSimulation()
+        private string _selectedWashingProgram;
+        public string SelectedWashingProgram
         {
-            _washingSimulationTimer?.Stop();
-            _brewingSimulationTimer?.Stop();
-
+            get => _selectedWashingProgram;
+            set
+            {
+                _selectedWashingProgram = value;
+                OnPropertyChanged(nameof(SelectedWashingProgram));
+                LoadWashingSteps();
+            }
         }
 
-        private void OnAlarmTriggered()
-        {
-            StopSimulation();
-        }
 
+        private Recipe? _currentRecipe;
+        private string _currentBrewingStepDescription;
         public string CurrentBrewingStepDescription
         {
             get => _currentBrewingStepDescription;
@@ -144,6 +82,8 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
+        private WashProgram? _currentWashProgram;
+        private string _currentWashingStepDescription;
         public string CurrentWashingStepDescription
         {
             get => _currentWashingStepDescription;
@@ -154,182 +94,261 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
+        private bool _isTankClean = true;
+        public bool IsTankClean
+        {
+            get => _isTankClean;
+            set
+            {
+                _isTankClean = value;
+                OnPropertyChanged(nameof(IsTankClean));
+                OnPropertyChanged(nameof(CanStartBrewing));
+            }
+        }
+
+        private bool _isBrewingRunning;
+        public bool IsBrewingRunning
+        {
+            get => _isBrewingRunning;
+            set
+            {
+                if (_isBrewingRunning != value)
+                {
+                    _isBrewingRunning = value;
+                    OnPropertyChanged(nameof(IsBrewingRunning));
+                    OnPropertyChanged(nameof(CanStartBrewing));
+                    OnPropertyChanged(nameof(CanStartWashing));
+                }
+            }
+        }
+
+        private bool _isWashingRunning;
+        public bool IsWashingRunning
+        {
+            get => _isWashingRunning;
+            set
+            {
+                if (_isWashingRunning != value)
+                {
+                    _isWashingRunning = value;
+                    OnPropertyChanged(nameof(IsWashingRunning));
+                    OnPropertyChanged(nameof(CanStartBrewing));
+                    OnPropertyChanged(nameof(CanStartWashing));
+                }
+            }
+        }
+
+        public bool CanStartBrewing => !IsBrewingRunning && !IsWashingRunning && IsTankClean;
+        public bool CanStartWashing => !IsBrewingRunning && !IsWashingRunning;
+
+        private ISeries[] _temperatureSeries;
+        public ISeries[] TemperatureSeries
+        {
+            get => _temperatureSeries;
+            set
+            {
+                _temperatureSeries = value;
+                OnPropertyChanged(nameof(TemperatureSeries));
+            }
+        }
+
+        private ISeries[] _washingSeries;
+        public ISeries[] WashingSeries
+        {
+            get => _washingSeries;
+            set
+            {
+                _washingSeries = value;
+                OnPropertyChanged(nameof(WashingSeries));
+            }
+        }
+
+        private ISeries[] _combinedSeries;
+        public ISeries[] CombinedSeries
+        {
+            get => _combinedSeries;
+            set
+            {
+                _combinedSeries = value;
+                OnPropertyChanged(nameof(CombinedSeries));
+            }
+        }
+
+
+
+
+        public RystIPAViewModel(RystIPABrewingService brewingService, RystIPAWashingService washingService)
+        {
+            _brewingRepo = new RecipeRepo();
+            _washingRepo = new WashingRepo();
+            _brewingService = brewingService;
+            _washingService = washingService;
+
+
+            ProgramBindings();
+            ServiceEvents();
+        }
+
+        private void ProgramBindings()
+        {
+            var recipes = _brewingRepo.GetAllRecipes();
+            foreach (var recipe in recipes)
+                BrewingProgramOptions.Add(recipe.Name);
+
+            var defaultRecipe = _brewingRepo.GetRecipeByName("Ryst IPA");
+            if (defaultRecipe != null)
+                SelectedBrewingProgram = defaultRecipe.Name;
+
+            var washPrograms = _washingRepo.GetAllWashPrograms();
+            foreach (var wash in washPrograms)
+                WashingProgramOptions.Add(wash.Name);
+
+            var defaultWash = _washingRepo.GetWashProgramByName("Ryst IPA Washing");
+            if (defaultWash != null)
+                SelectedWashingProgram = defaultWash.Name;
+
+            UpdateCombinedSeries();
+        }
+
+        private void UpdateCombinedSeries()
+        {
+            CombinedSeries = new ISeries[]
+            {
+        new LineSeries<int>
+        {
+            Values = _brewingService.TemperatureValues,
+            Name = "Brewing Temperature",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _brewingService.MaltValues,
+            Name = "Malt",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.TemperatureValues,
+            Name = "Washing Temperature",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.RinseValues,
+            Name = "Rinse Power",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.DetergentValues,
+            Name = "Detergent",
+            Fill = null
+        }
+            };
+        }
+
+        private void ServiceEvents()
+        {
+            _brewingService.BrewingStepChanged += (msg) =>
+            {
+                CurrentBrewingStepDescription = msg;
+            };
+
+            _brewingService.IsCompleted += () =>
+            {
+                IsTankClean = false;
+                IsBrewingRunning = false;
+                StatusChanged?.Invoke("Completed");
+            };
+
+            _washingService.WashingStepChanged += (msg) =>
+            {
+                CurrentWashingStepDescription = msg;
+            };
+
+            _washingService.IsCompleted += () =>
+            {
+                IsTankClean = true;
+                IsWashingRunning = false;
+                StatusChanged?.Invoke("Completed");
+            };
+
+            AlarmService.AlarmTriggered += OnAlarmTriggered;
+        }
+
+        public void StartBrewing()
+        {
+            _washingService.TemperatureValues.Clear();
+            _washingService.DetergentValues.Clear();
+            _washingService.RinseValues.Clear();
+
+            CurrentWashingSteps.Clear();
+            CurrentWashingStepDescription = string.Empty;
+
+            var recipe = _brewingRepo.GetRecipeByName(SelectedBrewingProgram);
+            if (recipe != null)
+            {
+                _brewingService.StartBrewing(recipe);
+                IsTankClean = false;
+                IsBrewingRunning = true;
+                StatusChanged?.Invoke("Running");
+            }
+        }
+
+        public void StartWashing()
+        {
+            _brewingService.TemperatureValues.Clear();
+            _brewingService.MaltValues.Clear();
+
+            CurrentBrewingSteps.Clear();
+            CurrentBrewingStepDescription = string.Empty;
+
+            var program = _washingRepo.GetWashProgramByName(SelectedWashingProgram);
+            if (program != null)
+            {
+                _washingService.StartWashing(program);
+                IsWashingRunning = true;
+                StatusChanged?.Invoke("Running");
+            }
+        }
+
 
         public void LoadBrewingSteps()
         {
             CurrentBrewingSteps.Clear();
-            if (string.IsNullOrEmpty(SelectedBrewingProgram)) return;
-
-            var recipe = _brewingRepo
-                .GetAllRecipes()
-                .FirstOrDefault(recipe => recipe.Name == SelectedBrewingProgram);
-
+            var recipe = _brewingRepo.GetRecipeByName(SelectedBrewingProgram);
             if (recipe == null) return;
-            foreach (var brewingStep in recipe.Steps)
-                CurrentBrewingSteps.Add(brewingStep);
+
+            foreach (var step in recipe.Steps)
+                CurrentBrewingSteps.Add(step);
         }
 
         public void LoadWashingSteps()
         {
             CurrentWashingSteps.Clear();
-            if (string.IsNullOrEmpty(SelectedWashingProgram))
-                return;
+            var program = _washingRepo.GetWashProgramByName(SelectedWashingProgram);
+            if (program == null) return;
 
-            var washProgram = _washingRepo
-                .GetAllWashPrograms()
-                .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
-
-            if (washProgram == null)
-                return;
-
-            foreach (var washingSteps in washProgram.Steps)
-                CurrentWashingSteps.Add(washingSteps);
+            foreach (var step in program.Steps)
+                CurrentWashingSteps.Add(step);
         }
 
-        public void StartBrewingSimulation()
+        public void StopAll()
         {
-            if (_brewingSimulationTimer != null && _brewingSimulationTimer.IsEnabled)
-                return;
-
-            _currentRecipe = _brewingRepo
-                .GetAllRecipes()
-                .FirstOrDefault(recipe => recipe.Name == SelectedBrewingProgram);
-
-            if (_currentRecipe == null || _currentRecipe.Steps.Count == 0)
-                return;
-
-            _currentBrewingStepIndex = 0;
-            _stepTimeElapsed = 0;
-
-            _brewingSimulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _brewingSimulationTimer.Tick += BrewingSimulationTick;
-            _brewingSimulationTimer?.Start();
+            _brewingService.StopBrewing();
+            _washingService.StopWashing();
         }
 
-        public void StartWashingSimulation()
+        private void OnAlarmTriggered()
         {
-            if (_washingSimulationTimer != null && _washingSimulationTimer.IsEnabled)
-                return;
-
-            _currentWashProgram = _washingRepo
-                .GetAllWashPrograms()
-                .FirstOrDefault(washProgram => washProgram.Name == SelectedWashingProgram);
-
-            if (_currentWashProgram == null || _currentWashProgram.Steps.Count == 0)
-                return;
-
-            _currentWashingStepIndex = 0;
-            _stepTimeElapsed = 0;
-
-            _washingSimulationTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _washingSimulationTimer.Tick += WashingSimulationTick;
-            _washingSimulationTimer?.Start();
+            StopAll();
+            OnPropertyChanged(nameof(CanStartBrewing));
+            OnPropertyChanged(nameof(CanStartWashing));
         }
 
-        private void BrewingSimulationTick(object? sender, EventArgs e)
+        protected void OnPropertyChanged(string name)
         {
-            try
-            {
-                if (_currentRecipe == null || _currentBrewingStepIndex >= _currentRecipe.Steps.Count)
-                {
-                    CurrentBrewingStepDescription = "Brewing complete.";
-                    StatusChanged?.Invoke("Completed");
-                    _brewingSimulationTimer?.Stop();
-                    _isTankClean = false;
-                    return;
-                }
-
-                var step = _currentRecipe.Steps[_currentBrewingStepIndex];
-                CurrentBrewingStepDescription = $"Step {_currentBrewingStepIndex + 1}/{_currentRecipe.Steps.Count}: {step.Description} ({step.Time} sec)";
-
-                if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (_currentTemperature <= 65)
-                    {
-                        _currentTemperature += 2;
-                        if (_currentTemperature >= 65)
-                            _currentTemperature = 65;
-                    }
-                }
-
-                if (step.Description.Contains("Tilsett malt", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (_currentTemperature >= 65)
-                    {
-                        _currentMaltInGrams = 50;
-                    }
-                }
-
-                _temperatureValues.Add(_currentTemperature);
-                _maltValues.Add(_currentMaltInGrams);
-                AlarmService.CheckTemperature(_currentTemperature, SelectedBrewingProgram, "Ryst Tank");
-
-                _stepTimeElapsed++;
-
-                if (_stepTimeElapsed >= step.Time)
-                {
-                    _currentBrewingStepIndex++;
-                    _stepTimeElapsed = 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                _brewingSimulationTimer?.Stop();
-                CurrentBrewingStepDescription = $"Simulation error: {ex.Message}";
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
-        private void WashingSimulationTick(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (_currentWashProgram == null || _currentWashingStepIndex >= _currentWashProgram.Steps.Count)
-                {
-                    CurrentWashingStepDescription = "Wash Complete, you can now start the Brewery again";
-                    StatusChanged?.Invoke("Completed");
-                    _washingSimulationTimer?.Stop();
-                    _isTankClean = true;
-                    return;
-                }
-
-                var step = _currentWashProgram.Steps[_currentWashingStepIndex];
-                CurrentWashingStepDescription = $"Step {_currentWashingStepIndex + 1}/{_currentWashProgram.Steps.Count}: {step.Description} ({step.Time} sec)";
-
-                if (step.Description.Contains("Tømmer Tank", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (_currentTemperature <= 65)
-                    {
-                        _currentTemperature += 2;
-                        if (_currentTemperature >= 65)
-                            _currentTemperature = 65;
-                    }
-                }
-
-                _temperatureValues.Add(_currentTemperature);
-                AlarmService.CheckTemperature(_currentTemperature, SelectedWashingProgram, "Ryst Tank");
-
-                _stepTimeElapsed++;
-
-                if (_stepTimeElapsed >= step.Time)
-                {
-                    _currentWashingStepIndex++;
-                    _stepTimeElapsed = 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                _washingSimulationTimer?.Stop();
-                CurrentWashingStepDescription = $"Simulation error: {ex.Message}";
-            }
-        }
-
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
     }
 }
-

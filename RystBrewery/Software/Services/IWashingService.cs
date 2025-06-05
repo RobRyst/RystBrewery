@@ -11,6 +11,7 @@ namespace RystBrewery.Software.Services
     public interface IWashingService
     {
         event Action<string> WashingStepChanged;
+
         ObservableCollection<int> RinseValues { get; }
         ObservableCollection<int> DetergentValues { get; }
         ObservableCollection<int> MaltValues { get; }

@@ -29,6 +29,8 @@ namespace RystBrewery.Software.ViewModels
         private readonly IBrewingService _brewingService;
         private readonly IWashingService _washingService;
 
+
+
         public AlarmService AlarmService { get; } = new AlarmService();
 
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
@@ -103,10 +105,40 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        public bool IsBrewingRunning => _brewingService.IsRunning;
-        public bool IsWashingRunning => _washingService.IsRunning;
+        private bool _isBrewingRunning;
+        public bool IsBrewingRunning
+        {
+            get => _isBrewingRunning;
+            set
+            {
+                if (_isBrewingRunning != value)
+                {
+                    _isBrewingRunning = value;
+                    OnPropertyChanged(nameof(IsBrewingRunning));
+                    OnPropertyChanged(nameof(CanStartBrewing));
+                    OnPropertyChanged(nameof(CanStartWashing));
+                }
+            }
+        }
 
-        public bool CanStartBrewing => IsTankClean;
+        private bool _isWashingRunning;
+        public bool IsWashingRunning
+        {
+            get => _isWashingRunning;
+            set
+            {
+                if (_isWashingRunning != value)
+                {
+                    _isWashingRunning = value;
+                    OnPropertyChanged(nameof(IsWashingRunning));
+                    OnPropertyChanged(nameof(CanStartBrewing));
+                    OnPropertyChanged(nameof(CanStartWashing));
+                }
+            }
+        }
+
+        public bool CanStartBrewing => !IsBrewingRunning && !IsWashingRunning && IsTankClean;
+        public bool CanStartWashing => !IsBrewingRunning && !IsWashingRunning;
 
         private ISeries[] _temperatureSeries;
         public ISeries[] TemperatureSeries
@@ -144,7 +176,8 @@ namespace RystBrewery.Software.ViewModels
 
 
 
-        public RystEpleCiderViewModel(IBrewingService brewingService, IWashingService washingService)
+        public RystEpleCiderViewModel(RystEpleciderBrewingService brewingService, RystEpleciderWashingService washingService)
+
         {
             _brewingRepo = new RecipeRepo();
             _washingRepo = new WashingRepo();
@@ -224,7 +257,9 @@ namespace RystBrewery.Software.ViewModels
             _brewingService.IsCompleted += () =>
             {
                 IsTankClean = false;
+                IsBrewingRunning = false;
                 StatusChanged?.Invoke("Completed");
+                AlarmService.LogEvent("Ryst Eplecider: Brewing completed", SelectedBrewingProgram);
             };
 
             _washingService.WashingStepChanged += (msg) =>
@@ -235,7 +270,9 @@ namespace RystBrewery.Software.ViewModels
             _washingService.IsCompleted += () =>
             {
                 IsTankClean = true;
+                IsWashingRunning = false;
                 StatusChanged?.Invoke("Completed");
+                AlarmService.LogEvent("Ryst Eplecider: Washing completed", SelectedWashingProgram);
             };
 
             AlarmService.AlarmTriggered += OnAlarmTriggered;
@@ -247,13 +284,19 @@ namespace RystBrewery.Software.ViewModels
             _washingService.DetergentValues.Clear();
             _washingService.RinseValues.Clear();
 
+            CurrentWashingSteps.Clear();
+            CurrentWashingStepDescription = string.Empty;
 
             var recipe = _brewingRepo.GetRecipeByName(SelectedBrewingProgram);
             if (recipe != null)
-                IsTankClean = false;
+            {
                 _brewingService.StartBrewing(recipe);
+                IsTankClean = false;
+                IsBrewingRunning = true;
                 StatusChanged?.Invoke("Running");
 
+                AlarmService.LogEvent("Ryst Eplecider: Started brewing", SelectedBrewingProgram);
+            }
         }
 
         public void StartWashing()
@@ -261,14 +304,19 @@ namespace RystBrewery.Software.ViewModels
             _brewingService.TemperatureValues.Clear();
             _brewingService.MaltValues.Clear();
 
+            CurrentBrewingSteps.Clear();
+            CurrentBrewingStepDescription = string.Empty;
+
             var program = _washingRepo.GetWashProgramByName(SelectedWashingProgram);
             if (program != null)
             {
-                IsTankClean = false;
                 _washingService.StartWashing(program);
+                IsWashingRunning = true;
                 StatusChanged?.Invoke("Running");
+                AlarmService.LogEvent("Ryst Eplecider: Started Washing", SelectedWashingProgram);
             }
         }
+
 
         public void LoadBrewingSteps()
         {
@@ -294,11 +342,17 @@ namespace RystBrewery.Software.ViewModels
         {
             _brewingService.StopBrewing();
             _washingService.StopWashing();
+            AlarmService.LogEvent("Stopped all processes", SelectedBrewingProgram ?? SelectedWashingProgram);
+
         }
 
         private void OnAlarmTriggered()
         {
             StopAll();
+            OnPropertyChanged(nameof(CanStartBrewing));
+            OnPropertyChanged(nameof(CanStartWashing));
+            AlarmService.LogEvent("Process paused", SelectedBrewingProgram ?? SelectedWashingProgram ?? "Unknown Program");
+
         }
 
         protected void OnPropertyChanged(string name)

@@ -25,7 +25,7 @@ namespace RystBrewery
                     Steps = new List<BrewingSteps>
                     {
                         new() { Description = "Varm opp til 65°C", Time = 10 },
-                        new() { Description = "Tilsett malt", Time = 5 },
+                        new() { Description = "Tilsett malt og humle", Time = 5 },
                         new() { Description = "Kok i 60 min", Time = 10 }
                     }
                 });
@@ -39,7 +39,7 @@ namespace RystBrewery
                     Steps = new List<BrewingSteps>
                     {
                         new() { Description = "Varm opp til 65°C", Time = 10 },
-                        new() { Description = "Tilsett Sommer", Time = 5 },
+                        new() { Description = "Tilsett malt og einer", Time = 5 },
                         new() { Description = "Kok i 60 min", Time = 10 }
                     }
                 });
@@ -53,7 +53,7 @@ namespace RystBrewery
                     Steps = new List<BrewingSteps>
                     {
                         new() { Description = "Varm opp til 65°C", Time = 10 },
-                        new() { Description = "Tilsett EPLE", Time = 5 },
+                        new() { Description = "Tilsett eplejuice", Time = 5 },
                         new() { Description = "Kok i 60 min", Time = 10 }
                     }
                 });
