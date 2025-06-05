@@ -18,5 +18,6 @@ namespace RystBrewery.Software.Services
 
         ObservableCollection<int> TemperatureValues { get; }
         ObservableCollection<int> MaltValues { get; }
+
     }
 }

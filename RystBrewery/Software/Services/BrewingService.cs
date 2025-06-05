@@ -24,6 +24,14 @@ namespace RystBrewery.Software.Services
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
 
+        private readonly ObservableCollection<int> _rinseValues = new ObservableCollection<int>();
+        public ObservableCollection<int> RinseValues => _rinseValues;
+        private int _currentRinsePower = 0;
+
+        private readonly ObservableCollection<int> _detergentValues = new ObservableCollection<int>();
+        public ObservableCollection<int> DetergentValues => _detergentValues;
+        private int _currentDetergentValues = 0;
+
         public event Action<string>? BrewingStepChanged;
         public event Action IsCompleted;
 
@@ -74,9 +82,11 @@ namespace RystBrewery.Software.Services
             _brewingStepIndex = 0;
             _stepTimeElapsed = 0;
 
-            // Clear previous data and start fresh
+
             _temperatureValues.Clear();
+            _detergentValues.Clear();
             _maltValues.Clear();
+            _rinseValues.Clear();
             InitializeChartData();
 
             _brewingTimer.Start();

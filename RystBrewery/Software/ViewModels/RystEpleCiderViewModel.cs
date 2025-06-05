@@ -126,7 +126,7 @@ namespace RystBrewery.Software.ViewModels
             set
             {
                 _washingSeries = value;
-                OnPropertyChanged(nameof(_washingSeries));
+                OnPropertyChanged(nameof(WashingSeries));
             }
         }
 
@@ -174,23 +174,44 @@ namespace RystBrewery.Software.ViewModels
             if (defaultWash != null)
                 SelectedWashingProgram = defaultWash.Name;
 
-            TemperatureSeries = new ISeries[]
-                {
-                     new LineSeries<int> { Values = _brewingService.TemperatureValues, Name = "Temperature" },
-                     new LineSeries<int> { Values = _brewingService.MaltValues, Name = "Malt" }
-                };
+            UpdateCombinedSeries();
+        }
 
-            WashingSeries = new ISeries[]
-                {
-            new LineSeries<int> { Values = _washingService.WashingValues, Name = "Flow" }
-                };
-
+        private void UpdateCombinedSeries()
+        {
             CombinedSeries = new ISeries[]
-{
-    new LineSeries<int> { Values = _brewingService.TemperatureValues, Name = "Temperature" },
-    new LineSeries<int> { Values = _brewingService.MaltValues, Name = "Malt" },
-    new LineSeries<int> { Values = _washingService.WashingValues, Name = "Flow" }
-};
+            {
+        new LineSeries<int>
+        {
+            Values = _brewingService.TemperatureValues,
+            Name = "Brewing Temperature",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _brewingService.MaltValues,
+            Name = "Malt",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.TemperatureValues,
+            Name = "Washing Temperature",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.RinseValues,
+            Name = "Rinse Power",
+            Fill = null
+        },
+        new LineSeries<int>
+        {
+            Values = _washingService.DetergentValues,
+            Name = "Detergent",
+            Fill = null
+        }
+            };
         }
 
         private void ServiceEvents()
@@ -222,17 +243,28 @@ namespace RystBrewery.Software.ViewModels
 
         public void StartBrewing()
         {
+            _washingService.TemperatureValues.Clear();
+            _washingService.DetergentValues.Clear();
+            _washingService.RinseValues.Clear();
+
+
             var recipe = _brewingRepo.GetRecipeByName(SelectedBrewingProgram);
             if (recipe != null)
+                IsTankClean = false;
                 _brewingService.StartBrewing(recipe);
                 StatusChanged?.Invoke("Running");
+
         }
 
         public void StartWashing()
         {
+            _brewingService.TemperatureValues.Clear();
+            _brewingService.MaltValues.Clear();
+
             var program = _washingRepo.GetWashProgramByName(SelectedWashingProgram);
             if (program != null)
             {
+                IsTankClean = false;
                 _washingService.StartWashing(program);
                 StatusChanged?.Invoke("Running");
             }

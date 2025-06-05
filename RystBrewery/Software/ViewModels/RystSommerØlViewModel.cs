@@ -52,6 +52,7 @@ namespace RystBrewery.Software.ViewModels
 
         private int _currentTemperature = 55;
         private int _currentMaltInGrams = 0;
+        private int _currentDetergentValues = 0;
         private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
         private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
 

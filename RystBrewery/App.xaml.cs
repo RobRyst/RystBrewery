@@ -68,9 +68,9 @@ namespace RystBrewery
                     Name = "Ryst IPA Washing",
                     Steps = new List<WashingSteps>
                     {
-                        new() { Description = "Tømmer Tank", Time = 10 },
-                        new() { Description = "Blander Vaskemiddel", Time = 5 },
-                        new() { Description = "Spyl i 30min", Time = 10 }
+                        new() { Description = "Tømmer og renser tank", Time = 10 },
+                        new() { Description = "Vaskemiddel tilsettes", Time = 5 },
+                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
                     }
                 });
             }
@@ -82,9 +82,9 @@ namespace RystBrewery
                     Name = "Ryst Eplecider Washing",
                     Steps = new List<WashingSteps>
                     {
-                        new() { Description = "Tømmer Epler", Time = 10 },
-                        new() { Description = "Blander Vaskemiddel", Time = 5 },
-                        new() { Description = "Spyl i 30min", Time = 10 }
+                        new() { Description = "Tømmer og renser tank", Time = 10 },
+                        new() { Description = "Vaskemiddel tilsettes", Time = 5 },
+                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
                     }
                 });
             }
@@ -96,9 +96,9 @@ namespace RystBrewery
                     Name = "Ryst Sommerøl Washing",
                     Steps = new List<WashingSteps>
                     {
-                        new() { Description = "Tømmer Sommerøl rester", Time = 10 },
-                        new() { Description = "Blander Vaskemiddel", Time = 5 },
-                        new() { Description = "Spyl i 30min", Time = 10 }
+                        new() { Description = "Tømmer og renser tank", Time = 10 },
+                        new() { Description = "Vaskemiddel tilsettes", Time = 5 },
+                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
                     }
                 });
             }
