@@ -222,10 +222,11 @@ namespace RystBrewery.Software.ViewModels
         },
         new LineSeries<int>
         {
-            Values = _brewingService.MaltValues,
-            Name = "Malt",
+            Values = _brewingService.AppleJuiceValues,
+            Name = "AppleJuice",
             Fill = null
         },
+
         new LineSeries<int>
         {
             Values = _washingService.TemperatureValues,
@@ -243,7 +244,7 @@ namespace RystBrewery.Software.ViewModels
             Values = _washingService.DetergentValues,
             Name = "Detergent",
             Fill = null
-        }
+        }, 
             };
         }
 
@@ -278,12 +279,22 @@ namespace RystBrewery.Software.ViewModels
             AlarmService.AlarmTriggered += OnAlarmTriggered;
         }
 
-        public void StartBrewing()
+        public void ClearAllValues()
         {
             _washingService.TemperatureValues.Clear();
             _washingService.DetergentValues.Clear();
             _washingService.RinseValues.Clear();
+            _brewingService.TemperatureValues.Clear();
+            _brewingService.AppleJuiceValues.Clear();
+            _brewingService.HopValues.Clear();
+            _brewingService.JuniperValues.Clear();
+        }
 
+        public void StartBrewing()
+        {
+
+            ClearAllValues();
+            
             CurrentWashingSteps.Clear();
             CurrentWashingStepDescription = string.Empty;
 
@@ -301,8 +312,8 @@ namespace RystBrewery.Software.ViewModels
 
         public void StartWashing()
         {
-            _brewingService.TemperatureValues.Clear();
-            _brewingService.MaltValues.Clear();
+
+            ClearAllValues();
 
             CurrentBrewingSteps.Clear();
             CurrentBrewingStepDescription = string.Empty;

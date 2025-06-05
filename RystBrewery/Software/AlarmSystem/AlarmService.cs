@@ -39,7 +39,7 @@ namespace RystBrewery.Software.AlarmSystem
 
         public void LogEvent(string message, string program)
         {
-            string logEntry = $"{DateTime.Now:u}: {message}";
+            string logEntry = $"{DateTime.Now:u}: {program}: {message}";
             File.AppendAllText(_allEventsPath, logEntry + Environment.NewLine);
         }
 

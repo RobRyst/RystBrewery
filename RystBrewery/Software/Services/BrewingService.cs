@@ -26,11 +26,24 @@ namespace RystBrewery.Software.Services
 
         private readonly ObservableCollection<int> _rinseValues = new ObservableCollection<int>();
         public ObservableCollection<int> RinseValues => _rinseValues;
-        private int _currentRinsePower = 0;
+
+        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
+        public ObservableCollection<int> TemperatureValues => _temperatureValues;
+
+        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
+        public ObservableCollection<int> MaltValues => _maltValues;
 
         private readonly ObservableCollection<int> _detergentValues = new ObservableCollection<int>();
         public ObservableCollection<int> DetergentValues => _detergentValues;
-        private int _currentDetergentValues = 0;
+
+        private readonly ObservableCollection<int> _appleJuiceValues = new ObservableCollection<int>();
+        public ObservableCollection<int> AppleJuiceValues => _appleJuiceValues;
+
+        private readonly ObservableCollection<int> _hopValues = new ObservableCollection<int>();
+        public ObservableCollection<int> HopValues => _hopValues;
+
+        private readonly ObservableCollection<int> _juniperValues = new ObservableCollection<int>();
+        public ObservableCollection<int> JuniperValues => _juniperValues;
 
         public event Action<string>? BrewingStepChanged;
         public event Action IsCompleted;
@@ -46,14 +59,16 @@ namespace RystBrewery.Software.Services
 
         public ISeries[] TemperatureSeries { get; set; }
         public ISeries[] MaltSeries { get; set; }
+        public ISeries[] HopSeries { get; set; }
+        public ISeries[] AppleJuiceSeries { get; set; }
+        public ISeries[] JuniperSeries { get; set; }
 
         private int _currentTemperature = 55;
-        private int _currentMaltInGrams = 0;
-        private readonly ObservableCollection<int> _temperatureValues = new ObservableCollection<int>();
-        private readonly ObservableCollection<int> _maltValues = new ObservableCollection<int>();
+        private int _currentMalt = 0;
+        private int _currentAppleJuice = 0;
+        private int _currentHop = 0;
+        private int _currentJuniper = 0;
 
-        public ObservableCollection<int> TemperatureValues => _temperatureValues;
-        public ObservableCollection<int> MaltValues => _maltValues;
 
         public bool IsRunning => _brewingTimer?.IsEnabled == true;
 
@@ -69,7 +84,7 @@ namespace RystBrewery.Software.Services
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _temperatureValues.Add(_currentTemperature);
-                _maltValues.Add(_currentMaltInGrams);
+                _maltValues.Add(_currentMalt);
             });
         }
 
@@ -87,6 +102,9 @@ namespace RystBrewery.Software.Services
             _detergentValues.Clear();
             _maltValues.Clear();
             _rinseValues.Clear();
+            _appleJuiceValues.Clear();
+            _hopValues.Clear();
+            _juniperValues.Clear();
             InitializeChartData();
 
             _brewingTimer.Start();
@@ -118,15 +136,29 @@ namespace RystBrewery.Software.Services
             }
 
 
-            if ((step.Description.Contains("Tilsett malt", StringComparison.OrdinalIgnoreCase) ||
-                 step.Description.Contains("Tilsett", StringComparison.OrdinalIgnoreCase)) &&
-                 _currentTemperature >= 65)
+            if ((step.Description.Contains("Tilsett Malt og Einer", StringComparison.OrdinalIgnoreCase)))
+            { 
+                _currentMalt = 50;
+                _currentJuniper = 20;
+            }
+
+            if ((step.Description.Contains("Tilsett Malt og Humle", StringComparison.OrdinalIgnoreCase)))
             {
-                _currentMaltInGrams = 50;
+
+                _currentMalt = 70;
+                _currentHop = 30;
+            }
+
+            if ((step.Description.Contains("Tilsett Eple Juice", StringComparison.OrdinalIgnoreCase)))
+            {
+                _currentAppleJuice = 50;
             }
 
             _temperatureValues.Add(_currentTemperature);
-            _maltValues.Add(_currentMaltInGrams);
+            _maltValues.Add(_currentMalt);
+            _hopValues.Add(_currentHop);
+            _appleJuiceValues.Add(_currentAppleJuice);
+            _juniperValues.Add(_currentJuniper);
 
 
             _stepTimeElapsed++;

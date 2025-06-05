@@ -10,17 +10,14 @@ public static class AppService
     {
         var serviceCollection = new ServiceCollection();
 
-        // Brewing services per recipe
         serviceCollection.AddSingleton<RystIPABrewingService>();
         serviceCollection.AddSingleton<RystEpleciderBrewingService>();
         serviceCollection.AddSingleton<RystSommerølBrewingService>();
 
-        // Washing services per recipe
         serviceCollection.AddSingleton<RystIPAWashingService>();
         serviceCollection.AddSingleton<RystEpleciderWashingService>();
         serviceCollection.AddSingleton<RystSommerølWashingService>();
 
-        // ViewModels
         serviceCollection.AddSingleton<RystIPAViewModel>();
         serviceCollection.AddSingleton<RystEpleCiderViewModel>();
         serviceCollection.AddSingleton<RystSommerØlViewModel>();
