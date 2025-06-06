@@ -1,106 +1,111 @@
-RystBrewery – Brewing & CIP Automation System
-A simulation-based brewing automation solution built using C# WPF for desktop operations and ASP.NET Core with Blazor for web-based monitoring. The system controls brewing and Clean-in-Place (CIP) wash cycles, logs all process events, enforces safety rules, and provides real-time and historical analytics.
+# 🍺 RystBrewery – Brewing & CIP Automation System
 
-📌 Project Overview
-This project is a practical implementation of a brewery control and monitoring platform featuring:
+> Simulation-based brewery automation system with desktop and web monitoring.  
+> Built with C# WPF, ASP.NET Core, and Blazor.
 
-Desktop application for brewing and cleaning control
+---
 
-Process step simulation with live temperature tracking
+## 📌 Project Overview
 
-Automatic alarm handling and safety enforcement
+RystBrewery is a control and monitoring solution for breweries, featuring:
 
-SQLite-based logging and recipe configuration
+- 🖥️ Desktop app for brewing and CIP control  
+- 🔁 Step-by-step brewing process simulation  
+- 🚨 Alarm handling and safety rule enforcement  
+- 🗃️ SQLite-based recipe and log storage  
+- 🌐 Web dashboard with real-time + historical data  
+- 📄 PDF and CSV export of logs and reports  
 
-Web dashboard with real-time and historical process views
+---
 
-Exportable logs and graphs for process analysis
+## 🚀 Tech Stack
 
-🚀 Tech Stack
-Desktop Application
-.NET 8 / C# – WPF desktop application
+### 🖥️ Desktop Application
 
-MVVM Pattern – For clean separation of logic and UI
+- `.NET 8 / C#` – WPF  
+- `MVVM` – Clean separation of UI and logic  
+- `LiveCharts2` – Real-time charting  
+- `SQLite` – Embedded logging and recipes DB  
+- `Serilog` – Structured logging  
+- `JSON/XML` – Config and recipe files  
 
-LiveCharts2 – Real-time charting for temperature and process steps
+### 🌐 Web Application
 
-SQLite – Embedded database for logs, recipes, and user sessions
+- `ASP.NET Core 8.0` – Backend  
+- `Blazor Server` – Real-time UI updates  
+- `Chart.js` or `LiveCharts.js` – Data visualization  
+- `TailwindCSS` – UI styling  
+- `SignalR` – Live sync with desktop (optional)  
 
-Serilog – Structured logging to file and/or database
+### 📄 Export & Reporting
 
-JSON/XML – Recipe and configuration files
+- `QuestPDF` / `iText7` – PDF generation  
+- `CSV` – Export logs and process data  
 
-Web Application
-ASP.NET Core 8.0 – Web backend (Blazor Server or MVC)
+---
 
-Blazor Server – Real-time UI updates (optional MVC alternative)
+## ✨ Features
 
-Chart.js / LiveCharts.js – Web-based data visualizations
+### 🧪 Brewing & Cleaning
 
-TailwindCSS – Utility-first CSS framework for responsive UI
+- Choose between **IPA**, **Pilsner**, or **CIP** program  
+- Start/stop simulation with visual monitoring  
+- Enforces process steps and safety limits  
+- Live temperature graphing  
 
-SignalR – Live updates from desktop (optional integration)
+### 🚨 Safety System
 
-Export & Reporting
-QuestPDF / iText7 – PDF generation for reports
+- Auto-alarm and stop at >50°C  
+- Status indicators (Red / Yellow / Green)  
+- Manual stop triggers auto cleaning  
 
-CSV Export – Data export for logs and analysis
+### 📊 Data & History
 
-✨ Features
-🧪 Brewing & Cleaning Process Control
+- Live temperature & state curves  
+- Dashboard view:
+  - Active tanks  
+  - Last wash session  
+  - Previous brews  
+- Log filters by tank, time, recipe, error  
 
-Select IPA, Pilsner, or CIP program
+### 🔐 User Access
 
-Start, stop, and monitor active processes
+- Login required before any process starts  
+- Logs login attempts with timestamps and user IDs  
 
-Step-by-step simulation with process enforcement
+### 📁 Reporting
 
-Temperature visualization in real time
+- Export process sessions to PDF or CSV  
+- Auto-generate charts and session summaries  
+- Track alarms, durations, and outcomes  
 
-🚨 Safety & Alarm Handling
+---
 
-Auto-stop and alarm on over-temperature (>50°C)
+## 🧱 Architecture
 
-Red/yellow/green indicator lights for process status
+- Clean separation: Services, Models, UI  
+- Shared SQLite DB across desktop and web  
+- Optional REST API for frontend/backend decoupling  
 
-Manual stop triggers automatic tank emptying and cleaning
+---
 
-📊 Real-Time and Historical Data
+## 🏗️ Getting Started
 
-Temperature curves and process states displayed live
+### Prerequisites
 
-Dashboard shows active tanks, past runs, last wash
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)  
+- SQLite CLI or viewer  
+- Visual Studio 2022+ or JetBrains Rider  
 
-Filter logs by tank, date, recipe, or error
+```bash
+# Clone the repo
+git clone https://github.com/your-username/rystbrewery.git
+cd rystbrewery
 
-🧾 User Access Logging
+# Build and run (desktop app)
+cd RystBrewery.Desktop
+dotnet run
 
-Login required before starting processes
-
-Logs both successful and failed authentication attempts
-
-Stored with timestamp and user context
-
-📄 Reports & Exports
-
-Export logs and history to PDF or CSV
-
-Graphical report generation from past runs
-
-Track duration, alarms, and outcomes per session
-
-🧱 Clean Architecture
-
-Organized into services, models, and UI layers
-
-Shared SQLite database for desktop and web
-
-Optional API layer for decoupling UI and backend
-
-🏗️ Getting Started
-Prerequisites
-.NET 8 SDK
-
-SQLite CLI or DB viewer
-
-Visual Studio 2022+ or JetBrains Rider
+# Or for web (Blazor server)
+cd RystBrewery.Web
+dotnet run
