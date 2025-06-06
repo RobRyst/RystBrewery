@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
 
@@ -10,6 +11,14 @@ public static class AppService
     {
         var serviceCollection = new ServiceCollection();
 
+
+        serviceCollection.AddSingleton<AlarmService>();
+        serviceCollection.AddSingleton<RystEpleciderBrewingService>();
+        serviceCollection.AddSingleton<RystEpleciderWashingService>();
+        serviceCollection.AddSingleton<IBrewingService>(provider => provider.GetRequiredService<RystEpleciderBrewingService>());
+        serviceCollection.AddSingleton<IWashingService>(provider => provider.GetRequiredService<RystEpleciderWashingService>());
+
+
         serviceCollection.AddSingleton<RystIPABrewingService>();
         serviceCollection.AddSingleton<RystEpleciderBrewingService>();
         serviceCollection.AddSingleton<RystSommerølBrewingService>();
@@ -18,12 +27,13 @@ public static class AppService
         serviceCollection.AddSingleton<RystEpleciderWashingService>();
         serviceCollection.AddSingleton<RystSommerølWashingService>();
 
+
         serviceCollection.AddSingleton<RystIPAViewModel>();
         serviceCollection.AddSingleton<RystEpleCiderViewModel>();
         serviceCollection.AddSingleton<RystSommerØlViewModel>();
+        serviceCollection.AddSingleton<MainViewModel>();
 
         Services = serviceCollection.BuildServiceProvider();
     }
-
 }
 

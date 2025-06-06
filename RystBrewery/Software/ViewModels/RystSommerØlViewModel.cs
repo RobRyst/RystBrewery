@@ -43,8 +43,6 @@ namespace RystBrewery.Software.ViewModels
         public event Action<string>? StatusChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private int _stepTimeElapsed = 0;
-
         private string _selectedBrewingProgram { get; set; }
         public string SelectedBrewingProgram
         {
@@ -69,8 +67,6 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-
-        private Recipe? _currentRecipe;
         private string _currentBrewingStepDescription;
         public string CurrentBrewingStepDescription
         {
@@ -81,8 +77,6 @@ namespace RystBrewery.Software.ViewModels
                 OnPropertyChanged(nameof(CurrentBrewingStepDescription));
             }
         }
-
-        private WashProgram? _currentWashProgram;
         private string _currentWashingStepDescription;
         public string CurrentWashingStepDescription
         {
@@ -226,7 +220,7 @@ namespace RystBrewery.Software.ViewModels
         },
         new LineSeries<int>
         {
-            Values = _brewingService.MaltValues,
+            Values = _brewingService.JuniperValues,
             Name = "Juniper",
             Fill = null
         },
@@ -290,6 +284,7 @@ namespace RystBrewery.Software.ViewModels
             _brewingService.AppleJuiceValues.Clear();
             _brewingService.HopValues.Clear();
             _brewingService.JuniperValues.Clear();
+            _brewingService.MaltValues.Clear();
         }
 
         public void StartBrewing()
@@ -349,6 +344,8 @@ namespace RystBrewery.Software.ViewModels
             _brewingService.StopBrewing();
             _washingService.StopWashing();
             IsTankClean = false;
+            IsWashingRunning = false;
+            IsBrewingRunning = false;
         }
 
         private void OnAlarmTriggered()

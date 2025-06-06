@@ -18,9 +18,6 @@
             <Button Content="Ryst IPA" Click="TankOneBtn_Click" Margin="1"/>
             <Button Content="Ryst Eplecider" Click="TankTwoBtn_Click" Margin="1"/>
             <Button Content="Ryst Sommerøl" Click="TankThreeBtn_Click" Margin="1"/>
-            <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="10" />
-            <TextBlock Text="{Binding CurrentBrewingStepDescription}" FontSize="16" Margin="10"/>
-            <TextBlock Text="{Binding CurrentWashingStepDescription}" FontSize="16" Margin="10"/>
         </StackPanel>
 
         <Grid Grid.Column="1" Margin="10">

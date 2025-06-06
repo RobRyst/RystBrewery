@@ -51,11 +51,8 @@ namespace RystBrewery.Software.Services
         public string SelectedBrewingProgram { get; set; }
         private Recipe? _recipe;
         private int _brewingStepIndex;
-        private string _currentBrewingStepDescription;
         private int _stepTimeElapsed = 0;
         private DispatcherTimer? _brewingTimer;
-        private bool _isTankClean = true;
-        private readonly RecipeRepo _brewingRepo;
 
         public ISeries[] TemperatureSeries { get; set; }
         public ISeries[] MaltSeries { get; set; }
@@ -69,8 +66,9 @@ namespace RystBrewery.Software.Services
         private int _currentHop = 0;
         private int _currentJuniper = 0;
 
-
         public bool IsRunning => _brewingTimer?.IsEnabled == true;
+
+        public string SelectedWashingProgram { get; private set; }
 
         public BrewingService()
         {
@@ -85,14 +83,19 @@ namespace RystBrewery.Software.Services
             {
                 _temperatureValues.Add(_currentTemperature);
                 _maltValues.Add(_currentMalt);
+                _appleJuiceValues.Add(_currentAppleJuice);
+                _hopValues.Add(_currentHop);
+                _juniperValues.Add(_currentJuniper);
             });
         }
+
 
         public void StartBrewing(Recipe recipe)
         {
             if (IsRunning)
                 return;
 
+            SelectedBrewingProgram = recipe.Name;
             _recipe = recipe;
             _brewingStepIndex = 0;
             _stepTimeElapsed = 0;
@@ -129,29 +132,29 @@ namespace RystBrewery.Software.Services
             int remainingTime = step.Time - _stepTimeElapsed;
             BrewingStepChanged?.Invoke($"Step {_brewingStepIndex + 1}/{_recipe.Steps.Count}: {step.Description} - {remainingTime}s remaining");
 
-
             if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
             {
                 _currentTemperature = Math.Min(_currentTemperature + 2, 65);
             }
 
-
-            if ((step.Description.Contains("Tilsett Malt og Einer", StringComparison.OrdinalIgnoreCase)))
-            { 
+            if (step.Description.Contains("Tilsett Malt og Einer", StringComparison.OrdinalIgnoreCase))
+            {
                 _currentMalt = 50;
                 _currentJuniper = 20;
+                AlarmService.LogEvent("Adding Malt and Juniper", SelectedBrewingProgram);
             }
 
-            if ((step.Description.Contains("Tilsett Malt og Humle", StringComparison.OrdinalIgnoreCase)))
+            if (step.Description.Contains("Tilsett Malt og Humle", StringComparison.OrdinalIgnoreCase))
             {
-
                 _currentMalt = 70;
                 _currentHop = 30;
+                AlarmService.LogEvent($"{SelectedBrewingProgram}Adding Malt: {_currentMalt}g and {_currentHop}g", SelectedBrewingProgram);
             }
 
-            if ((step.Description.Contains("Tilsett Eple Juice", StringComparison.OrdinalIgnoreCase)))
+            if (step.Description.Contains("Tilsett Eple Juice", StringComparison.OrdinalIgnoreCase))
             {
                 _currentAppleJuice = 50;
+                AlarmService.LogEvent("Adding Apple Juice", SelectedBrewingProgram);
             }
 
             _temperatureValues.Add(_currentTemperature);
@@ -159,7 +162,6 @@ namespace RystBrewery.Software.Services
             _hopValues.Add(_currentHop);
             _appleJuiceValues.Add(_currentAppleJuice);
             _juniperValues.Add(_currentJuniper);
-
 
             _stepTimeElapsed++;
             if (_stepTimeElapsed >= step.Time)

@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using RystBrewery.Software.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -150,12 +149,6 @@ namespace RystBrewery.Software.Views
             MessageBox.Show($"Starter program: {_vm.SelectedWashingProgram}");
             _vm.StartWashing();
             UpdateLampStatus("Running");
-        }
-
-        private void Pause_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.StopAll();
-            UpdateLampStatus("Paused");
         }
 
         private void Stop_Click(object sender, RoutedEventArgs e)

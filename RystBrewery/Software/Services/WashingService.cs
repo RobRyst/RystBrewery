@@ -11,6 +11,7 @@ namespace RystBrewery.Software.Services
         public event Action<string> WashingStepChanged;
         public event Action IsCompleted;
 
+
         private readonly ObservableCollection<int> _temperatureValues = new();
         public ObservableCollection<int> TemperatureValues => _temperatureValues;
         private int _currentTemperature = 55;
@@ -55,6 +56,7 @@ namespace RystBrewery.Software.Services
         public void StartWashing(WashProgram program)
         {
             if (IsRunning) return;
+
 
             _washProgram = program;
             _washingStepIndex = 0;
