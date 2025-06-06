@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.ViewModels;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace RystBrewery.Software.Views
@@ -13,7 +14,17 @@ namespace RystBrewery.Software.Views
             InitializeComponent();
             _vm = AppService.Services.GetRequiredService<MainViewModel>();
             DataContext = _vm;
-            _vm.Refresh();
+
+            _vm.LatestLogs.CollectionChanged += (s, e) =>
+            {
+                if (_vm.LatestLogs.Count > 0)
+                {
+                    Dispatcher.InvokeAsync(() =>
+                    {
+                        LogsListBox.ScrollIntoView(_vm.LatestLogs[^1]);
+                    });
+                }
+            };
         }
     }
 }

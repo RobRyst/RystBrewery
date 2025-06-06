@@ -24,9 +24,9 @@ namespace RystBrewery
                     Name = "Ryst IPA",
                     Steps = new List<BrewingSteps>
                     {
-                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Varm opp til 60°C", Time = 10 },
                         new() { Description = "Tilsett Malt og Humle", Time = 5 },
-                        new() { Description = "Kok i 60 min", Time = 10 }
+                        new() { Description = "Kok i 15 min", Time = 15 }
                     }
                 });
             }
@@ -38,9 +38,9 @@ namespace RystBrewery
                     Name = "Ryst Sommerøl",
                     Steps = new List<BrewingSteps>
                     {
-                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Varm opp til 60°C", Time = 10 },
                         new() { Description = "Tilsett Malt og Einer", Time = 5 },
-                        new() { Description = "Kok i 60 min", Time = 10 }
+                        new() { Description = "Kok i 15 min", Time = 15 }
                     }
                 });
             }
@@ -52,9 +52,9 @@ namespace RystBrewery
                     Name = "Ryst Eplecider",
                     Steps = new List<BrewingSteps>
                     {
-                        new() { Description = "Varm opp til 65°C", Time = 10 },
+                        new() { Description = "Varm opp til 60°C", Time = 10 },
                         new() { Description = "Tilsett Eple Juice", Time = 5 },
-                        new() { Description = "Kok i 60 min", Time = 10 }
+                        new() { Description = "Kok i 15 min", Time = 15 }
                     }
                 });
             }
@@ -70,7 +70,7 @@ namespace RystBrewery
                     {
                         new() { Description = "Tømmer og renser tank", Time = 10 },
                         new() { Description = "Vaskemiddel tilsettes", Time = 5 },
-                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
+                        new() { Description = "Renser tank for vaskemiddel", Time = 15 }
                     }
                 });
             }
@@ -84,7 +84,7 @@ namespace RystBrewery
                     {
                         new() { Description = "Tømmer og renser tank", Time = 10 },
                         new() { Description = "Vaskemiddel tilsettes", Time = 5 },
-                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
+                        new() { Description = "Renser tank for vaskemiddel", Time = 15 }
                     }
                 });
             }
@@ -98,7 +98,7 @@ namespace RystBrewery
                     {
                         new() { Description = "Tømmer og renser tank", Time = 10 },
                         new() { Description = "Vaskemiddel tilsettes", Time = 5 },
-                        new() { Description = "Renser tank for vaskemiddel", Time = 10 }
+                        new() { Description = "Renser tank for vaskemiddel", Time = 15 }
                     }
                 });
             }

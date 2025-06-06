@@ -1,10 +1,18 @@
 ﻿using LiveChartsCore;
+using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.SKCharts;
 using LiveChartsCore.SkiaSharpView.WPF;
 using RystBrewery.Software;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
 using RystBrewery.Software.Services;
+using SkiaSharp;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+
 
 
 
@@ -37,7 +46,7 @@ namespace RystBrewery.Software.ViewModels
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
         public ObservableCollection<WashingSteps> CurrentWashingSteps { get; set; } = new ObservableCollection<WashingSteps>();
-        
+
 
         public event Action<string>? StatusChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -132,6 +141,28 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
+        private Axis[] _xAxes;
+        public Axis[] XAxes
+        {
+            get => _xAxes;
+            set
+            {
+                _xAxes = value;
+                OnPropertyChanged(nameof(XAxes));
+            }
+        }
+
+        private Axis[] _yAxes;
+        public Axis[] YAxes
+        {
+            get => _yAxes;
+            set
+            {
+                _yAxes = value;
+                OnPropertyChanged(nameof(YAxes));
+            }
+        }
+
         public bool CanStartBrewing => !IsBrewingRunning && !IsWashingRunning && IsTankClean;
         public bool CanStartWashing => !IsBrewingRunning && !IsWashingRunning;
 
@@ -174,6 +205,8 @@ namespace RystBrewery.Software.ViewModels
         public RystEpleCiderViewModel(RystEpleciderBrewingService brewingService, RystEpleciderWashingService washingService)
 
         {
+
+            var whitePaint = new SolidColorPaint(SKColors.White);
             _brewingRepo = new RecipeRepo();
             _washingRepo = new WashingRepo();
             _brewingService = brewingService;
@@ -182,6 +215,7 @@ namespace RystBrewery.Software.ViewModels
 
             ProgramBindings();
             ServiceEvents();
+            ConfigureAxes();
         }
 
         private void ProgramBindings()
@@ -213,38 +247,78 @@ namespace RystBrewery.Software.ViewModels
         {
             Values = _brewingService.TemperatureValues,
             Name = "Brewing Temperature",
-            Fill = null
+            Fill = null,
+            Stroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _brewingService.AppleJuiceValues,
             Name = "AppleJuice",
-            Fill = null
+            Fill = null,
+            Stroke = new SolidColorPaint(SKColors.LightGreen) { StrokeThickness = 1 }
         },
-
         new LineSeries<int>
         {
             Values = _washingService.TemperatureValues,
             Name = "Washing Temperature",
-            Fill = null
+            Fill = null,
+            Stroke = new SolidColorPaint(SKColors.Cyan) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _washingService.RinseValues,
             Name = "Rinse Power",
-            Fill = null
+            Fill = null,
+            Stroke = new SolidColorPaint(SKColors.LightBlue) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _washingService.DetergentValues,
             Name = "Detergent",
-            Fill = null
-        }, 
+            Fill = null,
+            Stroke = new SolidColorPaint(SKColors.Yellow) { StrokeThickness = 1 }
+        }
             };
         }
 
+        private void ConfigureAxes()
+        {
+            var whitePaint = new SolidColorPaint(SKColors.White);
+
+            XAxes = new Axis[]
+            {
+    new Axis
+    {
+        Name = "Time",
+        NamePaint = whitePaint,
+        NamePadding = new LiveChartsCore.Drawing.Padding(30), // More padding
+        LabelsPaint = whitePaint,
+        SeparatorsPaint = new SolidColorPaint(SKColors.Gray) { StrokeThickness = 1 },
+        TicksPaint = whitePaint,
+        TextSize = 14,       // Size of tick labels
+        NameTextSize = 16    // 👈 Size of axis title
+    }
+};
+
+            YAxes = new Axis[]
+            {
+        new Axis
+        {
+            Name = "Values",
+            NamePaint = whitePaint,
+            LabelsPaint = whitePaint,
+            SeparatorsPaint = new SolidColorPaint(SKColors.Gray) { StrokeThickness = 1 },
+            TicksPaint = whitePaint,
+            NamePadding = new LiveChartsCore.Drawing.Padding(15), // << important!
+            TextSize = 14
+        }
+            };
+        }
+
+
         private void ServiceEvents()
         {
+            AlarmService.AlarmTriggered += OnAlarmTriggered;
             _brewingService.BrewingStepChanged += (msg) =>
             {
                 CurrentBrewingStepDescription = msg;
@@ -255,7 +329,7 @@ namespace RystBrewery.Software.ViewModels
                 IsTankClean = false;
                 IsBrewingRunning = false;
                 StatusChanged?.Invoke("Completed");
-                AlarmService.LogEvent("Brewing completed", SelectedBrewingProgram);
+                AlarmService.LogEvent(" - Brewing completed", SelectedBrewingProgram);
             };
 
             _washingService.WashingStepChanged += (msg) =>
@@ -347,9 +421,14 @@ namespace RystBrewery.Software.ViewModels
         {
             _brewingService.StopBrewing();
             _washingService.StopWashing();
-            AlarmService.LogEvent("Stopped all processes", SelectedBrewingProgram ?? SelectedWashingProgram);
 
+            IsBrewingRunning = false;
+            IsWashingRunning = false;
+
+            StatusChanged?.Invoke("Stopped");
+            AlarmService.LogEvent("Stopped all processes", SelectedBrewingProgram ?? SelectedWashingProgram);
         }
+
 
         private void OnAlarmTriggered()
         {

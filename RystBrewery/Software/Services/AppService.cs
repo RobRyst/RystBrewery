@@ -13,15 +13,12 @@ public static class AppService
 
 
         serviceCollection.AddSingleton<AlarmService>();
-        serviceCollection.AddSingleton<RystEpleciderBrewingService>();
-        serviceCollection.AddSingleton<RystEpleciderWashingService>();
-        serviceCollection.AddSingleton<IBrewingService>(provider => provider.GetRequiredService<RystEpleciderBrewingService>());
-        serviceCollection.AddSingleton<IWashingService>(provider => provider.GetRequiredService<RystEpleciderWashingService>());
 
 
         serviceCollection.AddSingleton<RystIPABrewingService>();
         serviceCollection.AddSingleton<RystEpleciderBrewingService>();
         serviceCollection.AddSingleton<RystSommerølBrewingService>();
+
 
         serviceCollection.AddSingleton<RystIPAWashingService>();
         serviceCollection.AddSingleton<RystEpleciderWashingService>();
@@ -33,7 +30,11 @@ public static class AppService
         serviceCollection.AddSingleton<RystSommerØlViewModel>();
         serviceCollection.AddSingleton<MainViewModel>();
 
+
+
+        serviceCollection.AddSingleton<IBrewingService>(provider => provider.GetRequiredService<RystEpleciderBrewingService>());
+        serviceCollection.AddSingleton<IWashingService>(provider => provider.GetRequiredService<RystEpleciderWashingService>());
+
         Services = serviceCollection.BuildServiceProvider();
     }
 }
-

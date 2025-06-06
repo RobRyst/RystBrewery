@@ -13,6 +13,7 @@ namespace RystBrewery.Software.Converters
 
             return status switch
             {
+                "Idle" => Brushes.Gray,
                 "Running" => Brushes.Yellow,
                 "Completed" => Brushes.Green,
                 "Paused" => Brushes.Black,

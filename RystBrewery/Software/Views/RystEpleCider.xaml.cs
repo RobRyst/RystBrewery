@@ -1,7 +1,10 @@
-﻿using RystBrewery.Software.AlarmSystem;
+﻿using LiveChartsCore.SkiaSharpView.Painting;
+using Microsoft.Extensions.DependencyInjection;
+using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
 using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
+using SkiaSharp;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using Microsoft.Extensions.DependencyInjection;
 
 
 namespace RystBrewery.Software.Views
@@ -123,6 +125,7 @@ namespace RystBrewery.Software.Views
             _vm.StartBrewing();
             UpdateLampStatus("Running");
         }
+
 
         private void Start_Washing_Click(object sender, RoutedEventArgs e)
         {

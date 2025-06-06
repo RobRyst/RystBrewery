@@ -1,5 +1,6 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
 using RystBrewery.Software.Services;
@@ -18,7 +19,8 @@ namespace RystBrewery.Software.Services
 {
     internal class BrewingService : IBrewingService
     {
-        public AlarmService AlarmService { get; } = new AlarmService();
+        private readonly AlarmService _alarmService;
+
         public ObservableCollection<string> BrewingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> WashingProgramOptions { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<BrewingSteps> CurrentBrewingSteps { get; set; } = new ObservableCollection<BrewingSteps>();
@@ -60,21 +62,26 @@ namespace RystBrewery.Software.Services
         public ISeries[] AppleJuiceSeries { get; set; }
         public ISeries[] JuniperSeries { get; set; }
 
-        private int _currentTemperature = 55;
+        private int _currentTemperature = 0;
         private int _currentMalt = 0;
         private int _currentAppleJuice = 0;
         private int _currentHop = 0;
         private int _currentJuniper = 0;
+        private bool _loggedCooking = false;
 
         public bool IsRunning => _brewingTimer?.IsEnabled == true;
 
-        public string SelectedWashingProgram { get; private set; }
+        public string SelectedWashingProgram { get; set; }
 
-        public BrewingService()
+
+        public BrewingService(AlarmService alarmService)
         {
+            _alarmService = alarmService ?? throw new ArgumentNullException(nameof(alarmService));
             _brewingTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _brewingTimer.Tick += BrewingTick;
+            _alarmService.SetStatus("Brewing");
             InitializeChartData();
+            _alarmService.LogEvent("BrewingService initialized", "BREWING_SERVICE");
         }
 
         private void InitializeChartData()
@@ -89,18 +96,8 @@ namespace RystBrewery.Software.Services
             });
         }
 
-
-        public void StartBrewing(Recipe recipe)
+        public void ClearAllValues()
         {
-            if (IsRunning)
-                return;
-
-            SelectedBrewingProgram = recipe.Name;
-            _recipe = recipe;
-            _brewingStepIndex = 0;
-            _stepTimeElapsed = 0;
-
-
             _temperatureValues.Clear();
             _detergentValues.Clear();
             _maltValues.Clear();
@@ -108,23 +105,50 @@ namespace RystBrewery.Software.Services
             _appleJuiceValues.Clear();
             _hopValues.Clear();
             _juniperValues.Clear();
+        }
+
+        public void StartBrewing(Recipe recipe)
+        {
+            if (IsRunning)
+            {
+                _alarmService.LogEvent("Brewing already in progress - ignoring start request", "BREWING_SERVICE");
+                return;
+            }
+
+            SelectedBrewingProgram = recipe.Name;
+            _recipe = recipe;
+            _brewingStepIndex = 0;
+            _stepTimeElapsed = 0;
+            _loggedCooking = false;
+
+            ClearAllValues();
             InitializeChartData();
 
             _brewingTimer.Start();
+            _alarmService.LogEvent($"Started brewing: {recipe.Name}", "BREWING_SERVICE");
+            _alarmService.SetStatus("Running");
         }
 
         public void StopBrewing()
         {
-            _brewingTimer?.Stop();
+            if (IsRunning)
+            {
+                _brewingTimer?.Stop();
+                _alarmService.LogEvent($"Stopped brewing: {SelectedBrewingProgram}", "BREWING_SERVICE");
+                _alarmService.SetStatus("Stopped");
+            }
         }
 
         private void BrewingTick(object sender, EventArgs e)
         {
             if (_recipe == null || _brewingStepIndex >= _recipe.Steps.Count)
             {
-                BrewingStepChanged?.Invoke("Brewing Complete");
+                BrewingStepChanged?.Invoke(" - Brewing Complete");
                 IsCompleted?.Invoke();
                 _brewingTimer.Stop();
+                _alarmService.LogEvent($"Brewing completed: {SelectedBrewingProgram}", "BREWING_SERVICE");
+                AppService.Services.GetRequiredService<MainViewModel>().UpdateGlobalStatus();
+                _alarmService.LogProcessHistory(SelectedBrewingProgram);
                 return;
             }
 
@@ -132,41 +156,100 @@ namespace RystBrewery.Software.Services
             int remainingTime = step.Time - _stepTimeElapsed;
             BrewingStepChanged?.Invoke($"Step {_brewingStepIndex + 1}/{_recipe.Steps.Count}: {step.Description} - {remainingTime}s remaining");
 
+
+            _alarmService.CheckTemperature(_currentTemperature, SelectedBrewingProgram, "Main Tank");
+
             if (step.Description.Contains("Varm opp", StringComparison.OrdinalIgnoreCase))
             {
-                _currentTemperature = Math.Min(_currentTemperature + 2, 65);
+                int prevTemperature = _currentTemperature;
+                _currentTemperature = Math.Min(_currentTemperature + 30, 60);
+
+                if (_currentTemperature > prevTemperature)
+                {
+                    if (_currentTemperature < 60)
+                    {
+                        _alarmService.LogEvent($"Heating in progress: {_currentTemperature}℃ / 60℃", SelectedBrewingProgram);
+                    }
+                    else
+                    {
+                        _alarmService.LogEvent($"Target temperature reached: 60℃", SelectedBrewingProgram);
+                    }
+                }
             }
 
             if (step.Description.Contains("Tilsett Malt og Einer", StringComparison.OrdinalIgnoreCase))
             {
-                _currentMalt = 50;
-                _currentJuniper = 20;
-                AlarmService.LogEvent("Adding Malt and Juniper", SelectedBrewingProgram);
+                int prevMalt = _currentMalt;
+                int prevJuniper = _currentJuniper;
+
+                _currentMalt = Math.Min(_currentMalt + 20, 80);
+                _currentJuniper = Math.Min(_currentJuniper + 20, 40);
+
+                if (_currentMalt > prevMalt || _currentJuniper > prevJuniper)
+                {
+                    _alarmService.LogEvent($"Adding - Malt: {_currentMalt}g / 80g, Juniper: {_currentJuniper}g / 40g", SelectedBrewingProgram);
+                }
+                else
+                {
+                    _alarmService.LogEvent($"Target reached - Malt: {_currentMalt}g / 80g, Juniper: {_currentJuniper}g / 40g", SelectedBrewingProgram);
+                }
             }
 
             if (step.Description.Contains("Tilsett Malt og Humle", StringComparison.OrdinalIgnoreCase))
             {
-                _currentMalt = 70;
-                _currentHop = 30;
-                AlarmService.LogEvent($"{SelectedBrewingProgram}Adding Malt: {_currentMalt}g and {_currentHop}g", SelectedBrewingProgram);
+                int prevMalt = _currentMalt;
+                int prevHop = _currentHop;
+
+                _currentMalt = Math.Min(_currentMalt + 20, 80);
+                _currentHop = Math.Min(_currentHop + 20, 40);
+
+                if (_currentMalt > prevMalt || _currentHop > prevHop)
+                {
+                    _alarmService.LogEvent($"Adding - Malt: {_currentMalt}g / 80g, Hop: {_currentHop}g / 40g", SelectedBrewingProgram);
+                }
+                else
+                {
+                    _alarmService.LogEvent($"Target reached - Malt: {_currentMalt}g / 80g, Hop: {_currentHop}g / 40g", SelectedBrewingProgram);
+                }
             }
 
             if (step.Description.Contains("Tilsett Eple Juice", StringComparison.OrdinalIgnoreCase))
             {
-                _currentAppleJuice = 50;
-                AlarmService.LogEvent("Adding Apple Juice", SelectedBrewingProgram);
+                int prevAppleJuice = _currentAppleJuice;
+                _currentAppleJuice = Math.Min(_currentAppleJuice + 40, 80);
+
+                if (_currentAppleJuice > prevAppleJuice)
+                {
+                    if (_currentAppleJuice < 80)
+                    {
+                        _alarmService.LogEvent($"Adding Apple Juice: {_currentAppleJuice}dl / 80dl", SelectedBrewingProgram);
+                    }
+                    else
+                    {
+                        _alarmService.LogEvent($"Target Apple Juice added: {_currentAppleJuice}dl / 80dl", SelectedBrewingProgram);
+                    }
+                }
             }
 
-            _temperatureValues.Add(_currentTemperature);
-            _maltValues.Add(_currentMalt);
-            _hopValues.Add(_currentHop);
-            _appleJuiceValues.Add(_currentAppleJuice);
-            _juniperValues.Add(_currentJuniper);
+            if (step.Description.Contains("Kok i 15 min", StringComparison.OrdinalIgnoreCase) && !_loggedCooking)
+            {
+                _alarmService.LogEvent($"Cooking for 15min", SelectedBrewingProgram);
+                _loggedCooking = true;
+            }
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _temperatureValues.Add(_currentTemperature);
+                _maltValues.Add(_currentMalt);
+                _hopValues.Add(_currentHop);
+                _appleJuiceValues.Add(_currentAppleJuice);
+                _juniperValues.Add(_currentJuniper);
+            });
 
             _stepTimeElapsed++;
             if (_stepTimeElapsed >= step.Time)
             {
-                System.Diagnostics.Debug.WriteLine($"Completed step: {step.Description}");
+                _alarmService.LogEvent($"Completed step: {step.Description}", SelectedBrewingProgram);
                 _brewingStepIndex++;
                 _stepTimeElapsed = 0;
             }
