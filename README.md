@@ -1,6 +1,6 @@
 # 🍺 RystBrewery – Brewing & CIP Automation System
 
-> Simulation-based brewery automation system with desktop and web monitoring.  
+> Simulation-based brewery automation system with desktop monitoring.  
 > Built with C# WPF, ASP.NET Core, and Blazor.
 
 ---
