@@ -29,19 +29,6 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 - `Serilog` – Structured logging  
 - `JSON/XML` – Config and recipe files  
 
-### 🌐 Web Application
-
-- `ASP.NET Core 8.0` – Backend  
-- `Blazor Server` – Real-time UI updates  
-- `Chart.js` or `LiveCharts.js` – Data visualization  
-- `TailwindCSS` – UI styling  
-- `SignalR` – Live sync with desktop (optional)  
-
-### 📄 Export & Reporting
-
-- `QuestPDF` / `iText7` – PDF generation  
-- `CSV` – Export logs and process data  
-
 ---
 
 ## ✨ Features
