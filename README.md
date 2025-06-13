@@ -1,6 +1,6 @@
 # 🍺 RystBrewery – Brewing & CIP Automation System
 
-> Simulation-based brewery automation system with desktop and web monitoring.  
+> Simulation-based brewery automation system with desktop monitoring.  
 > Built with C# WPF, ASP.NET Core, and Blazor.
 
 ---
@@ -28,19 +28,6 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 - `SQLite` – Embedded logging and recipes DB  
 - `Serilog` – Structured logging  
 - `JSON/XML` – Config and recipe files  
-
-### 🌐 Web Application
-
-- `ASP.NET Core 8.0` – Backend  
-- `Blazor Server` – Real-time UI updates  
-- `Chart.js` or `LiveCharts.js` – Data visualization  
-- `TailwindCSS` – UI styling  
-- `SignalR` – Live sync with desktop (optional)  
-
-### 📄 Export & Reporting
-
-- `QuestPDF` / `iText7` – PDF generation  
-- `CSV` – Export logs and process data  
 
 ---
 
@@ -96,16 +83,3 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)  
 - SQLite CLI or viewer  
 - Visual Studio 2022+ or JetBrains Rider  
-
-```bash
-# Clone the repo
-git clone https://github.com/your-username/rystbrewery.git
-cd rystbrewery
-
-# Build and run (desktop app)
-cd RystBrewery.Desktop
-dotnet run
-
-# Or for web (Blazor server)
-cd RystBrewery.Web
-dotnet run
