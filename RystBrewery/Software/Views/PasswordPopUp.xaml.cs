@@ -16,7 +16,7 @@ namespace RystBrewery.Software.Views
 {
     public partial class PasswordPopUp : Window
     {
-        public string InputPassword { get; set; }
+        public string InputPassword { get; set; } = string.Empty;
 
         public PasswordPopUp()
         {

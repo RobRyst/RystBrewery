@@ -43,7 +43,7 @@ namespace RystBrewery.Software.ViewModels
         public event Action<string>? StatusChanged;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private string _selectedBrewingProgram { get; set; }
+        private string _selectedBrewingProgram { get; set; } = string.Empty;
         public string SelectedBrewingProgram
         {
             get => _selectedBrewingProgram;
@@ -55,7 +55,7 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private string _selectedWashingProgram;
+        private string _selectedWashingProgram = string.Empty;
         public string SelectedWashingProgram
         {
             get => _selectedWashingProgram;
@@ -66,7 +66,7 @@ namespace RystBrewery.Software.ViewModels
                 LoadWashingSteps();
             }
         }
-        private string _currentBrewingStepDescription;
+        private string _currentBrewingStepDescription = string.Empty;
         public string CurrentBrewingStepDescription
         {
             get => _currentBrewingStepDescription;
@@ -78,7 +78,7 @@ namespace RystBrewery.Software.ViewModels
         }
 
 
-        private string _currentWashingStepDescription;
+        private string _currentWashingStepDescription = string.Empty;
         public string CurrentWashingStepDescription
         {
             get => _currentWashingStepDescription;
@@ -158,7 +158,7 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private ISeries[] _combinedSeries;
+        private ISeries[] _combinedSeries = Array.Empty<ISeries>();
         public ISeries[] CombinedSeries
         {
             get => _combinedSeries;
@@ -179,6 +179,8 @@ namespace RystBrewery.Software.ViewModels
             _brewingService = brewingService;
             _washingService = washingService;
 
+            _temperatureSeries = Array.Empty<ISeries>();
+            _washingSeries = Array.Empty<ISeries>();
 
             ProgramBindings();
             ServiceEvents();

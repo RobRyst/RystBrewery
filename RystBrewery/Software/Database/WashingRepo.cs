@@ -11,13 +11,13 @@ namespace RystBrewery.Software.Database
     public class WashProgram
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public List<WashingSteps> Steps { get; set; } = new List<WashingSteps>();
     }
 
     public class WashingSteps
     {
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         public int Time { get; set; }
     }
@@ -36,9 +36,14 @@ namespace RystBrewery.Software.Database
                 var insertWashProgram = connection.CreateCommand();
                 insertWashProgram.CommandText = "INSERT INTO WashProgram (Name) VALUES ($name); SELECT last_insert_rowid();";
                 insertWashProgram.Parameters.AddWithValue("$name", washProgram.Name);
-                var washingId = (long)insertWashProgram.ExecuteScalar();
+                var result = insertWashProgram.ExecuteScalar();
+                    if (result == null || result == DBNull.Value)
+                        {
+                            throw new InvalidOperationException("Failed to insert WashProgram and retrieve its ID.");
+                        }
+                var washingId = (long)result;
 
-                foreach (var step in washProgram.Steps)
+            foreach (var step in washProgram.Steps)
                 {
                     var insertStep = connection.CreateCommand();
                     insertStep.CommandText = @"
@@ -60,9 +65,15 @@ namespace RystBrewery.Software.Database
                 cmd.CommandText = ("SELECT COUNT(*) FROM WashProgram WHERE Name = $name");
                 cmd.Parameters.AddWithValue("$name", name);
 
-                var count = (long)cmd.ExecuteScalar();
-                return count > 0;
+            var result = cmd.ExecuteScalar();
+            if (result == null || result == DBNull.Value)
+            {
+                return false;
             }
+
+            var count = (long)result;
+            return count > 0;
+        }
 
         public WashProgram? GetWashProgramByName(string name)
         {

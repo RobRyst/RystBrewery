@@ -17,7 +17,7 @@
                     Orientation="Vertical"
                     HorizontalAlignment="Left"
                     Margin="0,0,20,20">
-            <TextBlock Text="Ryst Sommer Øl:" FontSize="16" FontWeight="Bold"/>
+            <TextBlock Text="Tank 3 - Ryst Sommer Øl:" FontSize="16" FontWeight="Bold"/>
             <Ellipse x:Name="StatusLight" Width="20" Height="20" Fill="Gray" Margin="0,10,0,10"/>
         </StackPanel>
         <StackPanel>

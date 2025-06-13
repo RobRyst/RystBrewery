@@ -13,14 +13,14 @@ namespace RystBrewery.Software.Database
 
     public class BrewingSteps
     {
-        public string Description { get; set; }
+        public required string Description { get; set; }
         public int Time { get; set; }
     }
 
     public class Recipe
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public List<BrewingSteps> Steps { get; set; } = new List<BrewingSteps>();
     }
 
@@ -37,7 +37,12 @@ namespace RystBrewery.Software.Database
             var insertRecipe = connection.CreateCommand();
             insertRecipe.CommandText = "INSERT INTO Recipes (Name) VALUES ($name); SELECT last_insert_rowid();";
             insertRecipe.Parameters.AddWithValue("$name", recipe.Name);
-            var recipeId = (long)insertRecipe.ExecuteScalar();
+            var result = insertRecipe.ExecuteScalar();
+            if (result == null || result == DBNull.Value)
+            {
+                throw new InvalidOperationException("Failed to insert recipe and retrieve its ID.");
+            }
+            var recipeId = (long)result;
 
             foreach (var step in recipe.Steps)
             {
@@ -61,7 +66,13 @@ namespace RystBrewery.Software.Database
             cmd.CommandText = "SELECT COUNT(*) FROM Recipes WHERE Name = $name";
             cmd.Parameters.AddWithValue("$name", name);
 
-            var count = (long)cmd.ExecuteScalar();
+            var result = cmd.ExecuteScalar();
+            if (result is null || result == DBNull.Value)
+            {
+                return false;
+            }
+
+            var count = (long)result;
             return count > 0;
         }
 

@@ -48,19 +48,19 @@ namespace RystBrewery.Software.Services
         public ObservableCollection<int> JuniperValues => _juniperValues;
 
         public event Action<string>? BrewingStepChanged;
-        public event Action IsCompleted;
+        public event Action IsCompleted = delegate { };
 
-        public string SelectedBrewingProgram { get; set; }
+        public string SelectedBrewingProgram { get; set; } = string.Empty;
         private Recipe? _recipe;
         private int _brewingStepIndex;
         private int _stepTimeElapsed = 0;
         private DispatcherTimer? _brewingTimer;
 
-        public ISeries[] TemperatureSeries { get; set; }
-        public ISeries[] MaltSeries { get; set; }
-        public ISeries[] HopSeries { get; set; }
-        public ISeries[] AppleJuiceSeries { get; set; }
-        public ISeries[] JuniperSeries { get; set; }
+        public required ISeries[] TemperatureSeries { get; set; }
+        public required ISeries[] MaltSeries { get; set; }
+        public required ISeries[] HopSeries { get; set; }
+        public required ISeries[] AppleJuiceSeries { get; set; }
+        public required ISeries[] JuniperSeries { get; set; }
 
         private int _currentTemperature = 0;
         private int _currentMalt = 0;
@@ -71,7 +71,7 @@ namespace RystBrewery.Software.Services
 
         public bool IsRunning => _brewingTimer?.IsEnabled == true;
 
-        public string SelectedWashingProgram { get; set; }
+        public string SelectedWashingProgram { get; set; } = string.Empty;
 
 
         public BrewingService(AlarmService alarmService)
@@ -124,7 +124,7 @@ namespace RystBrewery.Software.Services
             ClearAllValues();
             InitializeChartData();
 
-            _brewingTimer.Start();
+            _brewingTimer?.Start();
             _alarmService.LogEvent($"Started brewing: {recipe.Name}", "BREWING_SERVICE");
             _alarmService.SetStatus("Running");
         }
@@ -139,13 +139,13 @@ namespace RystBrewery.Software.Services
             }
         }
 
-        private void BrewingTick(object sender, EventArgs e)
+        private void BrewingTick(object? sender, EventArgs e)
         {
             if (_recipe == null || _brewingStepIndex >= _recipe.Steps.Count)
             {
                 BrewingStepChanged?.Invoke(" - Brewing Complete");
                 IsCompleted?.Invoke();
-                _brewingTimer.Stop();
+                _brewingTimer?.Stop();
                 _alarmService.LogEvent($"Brewing completed: {SelectedBrewingProgram}", "BREWING_SERVICE");
                 AppService.Services.GetRequiredService<MainViewModel>().UpdateGlobalStatus();
                 _alarmService.LogProcessHistory(SelectedBrewingProgram);

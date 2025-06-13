@@ -36,7 +36,7 @@ namespace RystBrewery.Software.AlarmSystem
         {
             AlarmTriggered?.Invoke();
             StatusChanged?.Invoke("Error");
-            MessageBox.Show("Error: Temperature went above 70°C. Process stopped.", "ALARM", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Error: Temperature went above 80°C. Process stopped.", "ALARM", MessageBoxButton.OK, MessageBoxImage.Error);
             LogAlarm(selectedProgram, tank, temp);
             StopAll();
         }
@@ -68,7 +68,7 @@ namespace RystBrewery.Software.AlarmSystem
 
         public void LogEvent(string message, string selectedProgram)
         {
-            string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: {selectedProgram}: {message}";
+            string logEntry = $"{DateTime.Now:dd-MM-yyyy HH:mm:ss}: {selectedProgram}: {message}";
             try
             {
                 File.AppendAllText(_allEventsPath, logEntry + Environment.NewLine);
@@ -82,7 +82,7 @@ namespace RystBrewery.Software.AlarmSystem
 
         private void LogAlarm(string selectedProgram, string tank, double temp)
         {
-            string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: Alarm triggered for program '{selectedProgram}' on tank '{tank}' with temperature {temp}°C.";
+            string logEntry = $"{DateTime.Now:dd-MM-yyyy HH:mm:ss}: Alarm triggered for program '{selectedProgram}' on tank '{tank}' with temperature {temp}°C.";
             try
             {
                 File.AppendAllText(_alarmLogPath, logEntry + Environment.NewLine);
@@ -96,7 +96,7 @@ namespace RystBrewery.Software.AlarmSystem
 
         public void LogProcessHistory(string selectedProgram)
         {
-            var logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: {selectedProgram}";
+            var logEntry = $"{DateTime.Now:dd-MM-yyyy HH:mm:ss}: {selectedProgram}";
             try
             {
                 File.AppendAllText("process_history_log.txt", logEntry + Environment.NewLine);

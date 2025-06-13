@@ -9,13 +9,13 @@ namespace RystBrewery.Software.Models
     public class Recipe
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public List<BrewingSteps> BrewingSteps { get; set; }
+        public required string Name { get; set; }
+        public List<BrewingSteps> BrewingSteps { get; set; } = new List<BrewingSteps>();
     }
 
     public class  BrewingSteps
     {
-        public string Description { get; set; }
-        public string Time { get; set; }
+        public required string Description { get; set; }
+        public required string Time { get; set; }
     }
 }

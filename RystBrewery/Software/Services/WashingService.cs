@@ -10,11 +10,11 @@ namespace RystBrewery.Software.Services
 {
     internal class WashingService : IWashingService
     {
-        public event Action<string> WashingStepChanged;
-        public event Action IsCompleted;
+        public event Action<string> WashingStepChanged = delegate { };
+        public event Action IsCompleted = delegate { };
         private readonly AlarmService _alarmService;
 
-        public string SelectedWashingProgram { get; set; }
+        public string SelectedWashingProgram { get; set; } = string.Empty;
 
         private readonly ObservableCollection<int> _temperatureValues = new();
         public ObservableCollection<int> TemperatureValues => _temperatureValues;
@@ -96,7 +96,7 @@ namespace RystBrewery.Software.Services
             _washingTimer.Stop();
         }
 
-        private void WashingTick(object sender, EventArgs e)
+        private void WashingTick(object? sender, EventArgs e)
         {
             if (_washProgram == null || _washingStepIndex >= _washProgram.Steps.Count)
             {

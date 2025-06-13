@@ -1,29 +1,12 @@
 ﻿using LiveChartsCore;
-using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Drawing;
 using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.SkiaSharpView.SKCharts;
-using LiveChartsCore.SkiaSharpView.WPF;
-using RystBrewery.Software;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
 using RystBrewery.Software.Services;
 using SkiaSharp;
-using SkiaSharp;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
 
 
 
@@ -52,7 +35,7 @@ namespace RystBrewery.Software.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
 
-        private string _selectedBrewingProgram { get; set; }
+        private string _selectedBrewingProgram { get; set; } = string.Empty;
         public string SelectedBrewingProgram
         {
             get => _selectedBrewingProgram;
@@ -64,7 +47,7 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private string _selectedWashingProgram;
+        private string _selectedWashingProgram = string.Empty;
         public string SelectedWashingProgram
         {
             get => _selectedWashingProgram;
@@ -76,7 +59,7 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private string _currentBrewingStepDescription;
+        private string _currentBrewingStepDescription = string.Empty;
         public string CurrentBrewingStepDescription
         {
             get => _currentBrewingStepDescription;
@@ -86,7 +69,7 @@ namespace RystBrewery.Software.ViewModels
                 OnPropertyChanged(nameof(CurrentBrewingStepDescription));
             }
         }
-        private string _currentWashingStepDescription;
+        private string _currentWashingStepDescription = string.Empty;
         public string CurrentWashingStepDescription
         {
             get => _currentWashingStepDescription;
@@ -141,28 +124,6 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private Axis[] _xAxes;
-        public Axis[] XAxes
-        {
-            get => _xAxes;
-            set
-            {
-                _xAxes = value;
-                OnPropertyChanged(nameof(XAxes));
-            }
-        }
-
-        private Axis[] _yAxes;
-        public Axis[] YAxes
-        {
-            get => _yAxes;
-            set
-            {
-                _yAxes = value;
-                OnPropertyChanged(nameof(YAxes));
-            }
-        }
-
         public bool CanStartBrewing => !IsBrewingRunning && !IsWashingRunning && IsTankClean;
         public bool CanStartWashing => !IsBrewingRunning && !IsWashingRunning;
 
@@ -188,7 +149,7 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-        private ISeries[] _combinedSeries;
+        private ISeries[] _combinedSeries = Array.Empty<ISeries>();
         public ISeries[] CombinedSeries
         {
             get => _combinedSeries;
@@ -199,23 +160,19 @@ namespace RystBrewery.Software.ViewModels
             }
         }
 
-
-
-
         public RystEpleCiderViewModel(RystEpleciderBrewingService brewingService, RystEpleciderWashingService washingService)
 
         {
-
-            var whitePaint = new SolidColorPaint(SKColors.White);
             _brewingRepo = new RecipeRepo();
             _washingRepo = new WashingRepo();
             _brewingService = brewingService;
             _washingService = washingService;
 
+            _temperatureSeries = Array.Empty<ISeries>();
+            _washingSeries = Array.Empty<ISeries>();
 
             ProgramBindings();
             ServiceEvents();
-            ConfigureAxes();
         }
 
         private void ProgramBindings()
@@ -248,73 +205,33 @@ namespace RystBrewery.Software.ViewModels
             Values = _brewingService.TemperatureValues,
             Name = "Brewing Temperature",
             Fill = null,
-            Stroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _brewingService.AppleJuiceValues,
             Name = "AppleJuice",
             Fill = null,
-            Stroke = new SolidColorPaint(SKColors.LightGreen) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _washingService.TemperatureValues,
             Name = "Washing Temperature",
             Fill = null,
-            Stroke = new SolidColorPaint(SKColors.Cyan) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _washingService.RinseValues,
             Name = "Rinse Power",
             Fill = null,
-            Stroke = new SolidColorPaint(SKColors.LightBlue) { StrokeThickness = 1 }
         },
         new LineSeries<int>
         {
             Values = _washingService.DetergentValues,
             Name = "Detergent",
             Fill = null,
-            Stroke = new SolidColorPaint(SKColors.Yellow) { StrokeThickness = 1 }
         }
             };
         }
-
-        private void ConfigureAxes()
-        {
-            var whitePaint = new SolidColorPaint(SKColors.White);
-
-            XAxes = new Axis[]
-            {
-    new Axis
-    {
-        Name = "Time",
-        NamePaint = whitePaint,
-        NamePadding = new LiveChartsCore.Drawing.Padding(30), // More padding
-        LabelsPaint = whitePaint,
-        SeparatorsPaint = new SolidColorPaint(SKColors.Gray) { StrokeThickness = 1 },
-        TicksPaint = whitePaint,
-        TextSize = 14,       // Size of tick labels
-        NameTextSize = 16    // 👈 Size of axis title
-    }
-};
-
-            YAxes = new Axis[]
-            {
-        new Axis
-        {
-            Name = "Values",
-            NamePaint = whitePaint,
-            LabelsPaint = whitePaint,
-            SeparatorsPaint = new SolidColorPaint(SKColors.Gray) { StrokeThickness = 1 },
-            TicksPaint = whitePaint,
-            NamePadding = new LiveChartsCore.Drawing.Padding(15), // << important!
-            TextSize = 14
-        }
-            };
-        }
-
 
         private void ServiceEvents()
         {
