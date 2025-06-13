@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;

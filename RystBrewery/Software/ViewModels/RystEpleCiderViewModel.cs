@@ -1,10 +1,8 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
 using RystBrewery.Software.Services;
-using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 

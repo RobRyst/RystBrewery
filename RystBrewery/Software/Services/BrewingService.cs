@@ -1,17 +1,8 @@
 ﻿using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
 using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.AlarmSystem;
 using RystBrewery.Software.Database;
-using RystBrewery.Software.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 

@@ -1,7 +1,6 @@
 ﻿using RystBrewery.Software.Database;
 using RystBrewery.Software.Views;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace RystBrewery
 {

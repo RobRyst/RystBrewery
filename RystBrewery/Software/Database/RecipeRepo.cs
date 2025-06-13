@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
-using Microsoft.Data.Sqlite;
-using RystBrewery.Software.Database;
+﻿using Microsoft.Data.Sqlite;
 
 namespace RystBrewery.Software.Database
 {

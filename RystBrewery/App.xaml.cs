@@ -1,10 +1,5 @@
 ﻿using RystBrewery.Software.Database;
-using RystBrewery.Software.ViewModels;
-using RystBrewery.Software.Services;
-using System.Configuration;
-using System.Data;
 using System.Windows;
-using RystBrewery.Software;
 
 namespace RystBrewery
 {

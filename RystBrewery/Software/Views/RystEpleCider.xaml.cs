@@ -1,28 +1,14 @@
-﻿using LiveChartsCore.SkiaSharpView.Painting;
-using Microsoft.Extensions.DependencyInjection;
-using RystBrewery.Software.AlarmSystem;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RystBrewery.Software.Database;
-using RystBrewery.Software.Services;
 using RystBrewery.Software.ViewModels;
-using SkiaSharp;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 
 namespace RystBrewery.Software.Views
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class RystEpleCider : UserControl
     {
         private readonly RystEpleCiderViewModel _vm;

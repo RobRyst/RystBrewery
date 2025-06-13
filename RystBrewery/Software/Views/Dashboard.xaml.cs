@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RystBrewery.Software.ViewModels;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace RystBrewery.Software.Views
