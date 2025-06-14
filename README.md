@@ -13,9 +13,6 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 - 🔁 Step-by-step brewing process simulation  
 - 🚨 Alarm handling and safety rule enforcement  
 - 🗃️ SQLite-based recipe and log storage  
-- 🌐 Web dashboard with real-time + historical data  
-- 📄 PDF and CSV export of logs and reports  
-
 ---
 
 ## 🚀 Tech Stack
@@ -35,7 +32,7 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 
 ### 🧪 Brewing & Cleaning
 
-- Choose between **IPA**, **Pilsner**, or **CIP** program  
+- Choose between **IPA**, **Eplecider**, **Sommerøl** or **CIP** program  
 - Start/stop simulation with visual monitoring  
 - Enforces process steps and safety limits  
 - Live temperature graphing  
@@ -62,7 +59,7 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 
 ### 📁 Reporting
 
-- Export process sessions to PDF or CSV  
+- Text file with log information
 - Auto-generate charts and session summaries  
 - Track alarms, durations, and outcomes  
 
