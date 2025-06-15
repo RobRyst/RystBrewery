@@ -67,8 +67,8 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 
 ## 🧱 Architecture
 
-- Clean separation: Services, Models, UI  
-- Shared SQLite DB across desktop and web  
+- Clean separation: Services, Models, UI
+- SQlite for Database
 - Optional REST API for frontend/backend decoupling  
 
 ---
