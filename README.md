@@ -73,10 +73,32 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 
 ---
 
-## 🏗️ Getting Started
+##🧠 What I Learned
+Working on the RystBrewery Brewing & CIP Automation System has significantly enhanced my understanding of building simulation based control systems and full-stack desktop applications. This project combined real-time logic, UI responsiveness, and backend integration using modern .NET technologies. Here are the key takeaways:
 
-### Prerequisites
+### C# WPF & MVVM Architecture
+- I gained valuable experience building a responsive desktop application using WPF and the MVVM design pattern. This helped me understand how to separate concerns between UI, logic, and data, while maintaining scalability and testability.
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)  
-- SQLite CLI or viewer  
-- Visual Studio 2022+ or JetBrains Rider  
+### Real-Time Simulation and State Handling
+- Implementing step-by-step brewing and CIP simulations taught me how to model dynamic processes, manage time-based events, and update UI elements in real time — critical skills for industrial or process-control software.
+
+### Safety Systems & Alarm Handling
+- Designing and enforcing safety rules (e.g., auto-stop on temperature thresholds) gave me practical insight into implementing fault-tolerant, user-safe systems, including visual status indicators and emergency logic.
+
+### Data Logging & Storage with SQLite
+- Using SQLite for persistent storage of logs and recipes improved my understanding of embedded databases, data filtering, and local data querying within desktop applications.
+
+### Structured Logging with Serilog
+- I learned to implement structured and file-based logging for traceability, debugging, and system transparency, especially important in production or audit-heavy environments.
+
+### User Authentication & Access Control
+- Integrating login functionality into a local app taught me how to restrict system access, track user sessions, and securely manage interactions — even outside of a web environment.
+
+### Data Visualization with LiveCharts2
+- Leveraging LiveCharts2 enabled me to render live-updating charts and temperature curves, enhancing both user experience and operational insight.
+
+### Configuration Management
+- Working with JSON and XML files for recipes and settings deepened my understanding of configuration-driven application design, enabling easier extensibility and customization.
+
+### Clean Architecture Principles
+- I applied service abstraction, dependency injection, and layered separation (Models, Services, UI), resulting in a maintainable and modular codebase that can evolve or scale over time.
