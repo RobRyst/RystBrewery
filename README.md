@@ -73,7 +73,7 @@ RystBrewery is a control and monitoring solution for breweries, featuring:
 
 ---
 
-##🧠 What I Learned
+## 🧠 What I Learned
 Working on the RystBrewery Brewing & CIP Automation System has significantly enhanced my understanding of building simulation based control systems and full-stack desktop applications. This project combined real-time logic, UI responsiveness, and backend integration using modern .NET technologies. Here are the key takeaways:
 
 ### C# WPF & MVVM Architecture
